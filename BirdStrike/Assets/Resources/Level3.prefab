@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1067942283285056538
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8443252631445410939}
+  - component: {fileID: 2944564399891225381}
+  m_Layer: 0
+  m_Name: Level3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8443252631445410939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067942283285056538}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.519808, y: -1.6312747, z: -0.13503748}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2944564399891225381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1067942283285056538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b01ee3ab15166a347a2f3c4151a3cde2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LevelID: 3
+  LevelName: Third Blood
+  Boss: {fileID: 2702088321843945096, guid: 82d85640becffaa4f8d6418f67419136, type: 3}
+  Rules:
+  - {fileID: 6625106331230604731, guid: ff3a558d4f8ea5949a74e8d4cb4e5ef1, type: 3}
+  - {fileID: 6625106331230604731, guid: efe260ba14334a14183d5cb50bdc6a76, type: 3}
+  - {fileID: 6625106331230604731, guid: 521dca13c61889f4db79463416f02b57, type: 3}
+  bossTime: 70
+  result: 0
