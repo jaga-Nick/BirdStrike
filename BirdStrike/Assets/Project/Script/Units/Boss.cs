@@ -1,10 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 
 public class Boss : Enemy
 {
+    
+    public enum BossPhase
+    {
+        Normal, // 全ての部位が健在
+        Angry,  // 一部の部位が破壊された
+        Serious // 全ての部位が破壊された（本体のみ）
+    }
+
+    [Header("Boss Parts")]
+    // インスペクターから部位のリストを登録
+    public List<BossPart> parts;
+    private int initialPartsCount;
+    private BossPhase currentPhase;
+    private bool isBodyInvincible = true;
+    
     public GameObject missileTemplate;
 
     public Transform firePoint2;
@@ -28,7 +43,62 @@ public class Boss : Enemy
     public override void OnStart()
     {
         Fly();
+        
+        initialPartsCount = parts.Count;
+        UpdatePhase(); // 初期フェーズを設定
+
+        // 各部位のOnDeathイベント（死亡通知）を購読する
+        foreach (var part in parts)
+        {
+            // partがnullでないことを確認
+            if (part != null)
+            {
+                part.OnDeath += OnPartDestroyed;
+            }
+        }
+        
         StartCoroutine(Enter());
+    }
+    
+    // 部位が破壊された時に呼び出されるメソッド
+    private void OnPartDestroyed(Unit sender)
+    {
+        // 破壊された部位をリストから安全に削除するために、一旦nullにする
+        var destroyedPart = sender as BossPart;
+        if (destroyedPart != null)
+        {
+            int index = parts.IndexOf(destroyedPart);
+            if (index != -1)
+            {
+                parts[index] = null;
+            }
+        }
+        
+        // フェーズを更新
+        UpdatePhase();
+    }
+    
+    // 現在の部位の状況に応じてフェーズを更新するメソッド
+    private void UpdatePhase()
+    {
+        // リスト内のnullでない（生きている）部位の数をカウント
+        int remainingParts = parts.Count(part => part != null);
+
+        if (remainingParts == initialPartsCount)
+        {
+            currentPhase = BossPhase.Normal;
+        }
+        else if (remainingParts > 0)
+        {
+            currentPhase = BossPhase.Angry;
+            Debug.Log("BOSS is ANGRY!");
+        }
+        else
+        {
+            currentPhase = BossPhase.Serious;
+            isBodyInvincible = false; // 全ての部位が破壊されたので無敵解除
+            Debug.Log("BOSS is SERIOUS! Body is now vulnerable!");
+        }
     }
 
     IEnumerator Enter()

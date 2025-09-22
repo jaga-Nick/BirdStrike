@@ -500,6 +500,7 @@ GameObject:
   - component: {fileID: 3576320898584160610}
   - component: {fileID: 134610782169268333}
   - component: {fileID: 7078038871053675802}
+  - component: {fileID: 684234250194526151}
   m_Layer: 0
   m_Name: Enemy2
   m_TagString: Untagged
@@ -614,7 +615,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9217452506801643721}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b5a193dda958eab4bbd657bc5ed28eb7, type: 3}
   m_Name: 
@@ -634,3 +635,29 @@ MonoBehaviour:
   lifetime: 4
   range: {x: 0, y: 0}
   enemyType: 1
+--- !u!114 &684234250194526151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217452506801643721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c70e0cae51fb4fc89b7ea353251b0cb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  side: 2
+  life: 30
+  rigidbodyBird: {fileID: 3576320898584160610}
+  ani: {fileID: 8996216226325494212}
+  speed: 5
+  fireRate: 10
+  bulletTemplate: {fileID: 3522430151264285694, guid: 530da914a9fd5ff46bd30ba64566fbb8, type: 3}
+  firePoint: {fileID: 8159792652212041964}
+  hp: 10
+  MaxHP: 10
+  Attack: 0
+  desoryOnDeath: 0
+  moveSpeed: 2
+  moveDistance: 1

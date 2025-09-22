@@ -1006,6 +1006,9 @@ MonoBehaviour:
   lifetime: 9999
   range: {x: 0, y: 0}
   enemyType: 2
+  parts:
+  - {fileID: 0}
+  - {fileID: 0}
   missileTemplate: {fileID: 206091966701159305, guid: 493c45282a4677d46a01f15f946d11ac, type: 3}
   firePoint2: {fileID: 1577786802272598356}
   firePoint3: {fileID: 5580941030072816870}
@@ -1013,3 +1016,5 @@ MonoBehaviour:
   target: {fileID: 0}
   fireRate2: 1.3
   UltCD: 10
+  radialShotCount: 5
+  radialShotSpreadAngle: 90
