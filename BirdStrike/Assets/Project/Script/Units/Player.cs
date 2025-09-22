@@ -1,16 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Common;
 
 public class Player : Unit
 {
     public float invincibleTime = 3f;
 
+    public float slowMag = 0.5f;
+
     private float timer = 0;
 
     Vector2 worldPosLeftBottom;
     Vector2 worldPosTopRight;
+    
+    private InputSystem_Actions _actionMap;
+
+    private void Awake()
+    {
+        InitInput();
+    }
 
     private void Start()
     {
@@ -25,17 +36,39 @@ public class Player : Unit
 
         timer += Time.deltaTime;
         Vector2 pos = transform.position;
-        pos.x += Input.GetAxis("Horizontal") * Time.deltaTime * speed;
-        pos.y += Input.GetAxis("Vertical") * Time.deltaTime * speed;
+        pos = _actionMap.Player.Move.ReadValue<Vector2>() * Time.deltaTime * (speed * slowMag);
+        //pos.x += Input.GetAxis("Horizontal") * Time.deltaTime * speed;
+        //pos.y += Input.GetAxis("Vertical") * Time.deltaTime * speed;
 
         transform.position = pos;
         LimitPosition(this.transform);
 
 
-        if (Input.GetButton("Fire1"))
+        // 攻撃
+        if (_actionMap.Player.Fire.IsPressed())
         {
             Fire();
         }
+        
+        // ボム
+        if (_actionMap.Player.Bomb.WasPressedThisFrame())
+        {
+            Debug.Log("ボム使用");
+        }
+        
+        // 減速
+        slowMag = _actionMap.Player.Slow.IsPressed() ? 0.5f : 1f;
+        
+    }
+    
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    public void InitInput()
+    {
+        var manager = InputSystemActionsManager.Instance();
+        _actionMap = manager.GetInputSystem_Actions();
+        manager.PlayerEnable();
     }
 
     public void LimitPosition(Transform trNeedLimit)

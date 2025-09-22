@@ -66,6 +66,13 @@ public class GameManager : MonoSingleton<GameManager>
 
     void OnLevelEnd(Level.LEVEL_RESULT result)
     {
+        if(result == Level.LEVEL_RESULT.SUCCESS)
+        {
+            // 次のレベルに進む代わりに、ゲームクリア処理を行う
+            Status = GAME_STATUS.OVER;
+            UIManager.Instance.UILeveClear();
+        }
+        /* // 元の複数レベル進行ロジックはコメントアウト
         if(result == Level.LEVEL_RESULT.SUCCESS && currentLevelId <3)
         {
             currentLevelId++;
@@ -76,6 +83,7 @@ public class GameManager : MonoSingleton<GameManager>
             Status = GAME_STATUS.OVER;
             UIManager.Instance.UILeveClear();
         }
+        */
 
     }
 

@@ -37,7 +37,19 @@ public class Level : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(RunLevel());
+        // ザコ敵のウェーブを開始する処理をコメントアウトし、ボス戦を即時開始する
+        // StartCoroutine(RunLevel()); 
+
+        UIManager.Instance.ShowLevelStart(string.Format("LEVEL {0} {1}", this.LevelID, this.LevelName));
+        
+        // ボスを即座に生成して戦闘開始
+        if (Boss != null)
+        {
+            boss = (Boss)UnitManager.Instance.GenerateEnemy(Boss.gameObject);
+            boss.target = GameManager.Instance.player;
+            // Fly()や攻撃開始はBossスクリプトのOnStart()で行われるため、ここでは不要
+            boss.OnDeath += Boss_OnDeath;
+        }
         
     }
 
@@ -54,6 +66,8 @@ public class Level : MonoBehaviour
 
     void Update()
     {
+        // ボス出現タイマーのロジックを不要にするため、中身を空にするかコメントアウト
+        /*
         timeSincelLevelStart = Time.realtimeSinceStartup - levelStartTime;
 
         if(result != LEVEL_RESULT.NONE)
@@ -72,6 +86,7 @@ public class Level : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     private void Boss_OnDeath(Unit sender)
