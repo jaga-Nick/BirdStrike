@@ -35,12 +35,13 @@ public class Player : Unit
             return;
 
         timer += Time.deltaTime;
-        Vector2 pos = transform.position;
-        pos = _actionMap.Player.Move.ReadValue<Vector2>() * Time.deltaTime * (speed * slowMag);
-        //pos.x += Input.GetAxis("Horizontal") * Time.deltaTime * speed;
-        //pos.y += Input.GetAxis("Vertical") * Time.deltaTime * speed;
+        
+        
+        Vector2 moveInput = _actionMap.Player.Move.ReadValue<Vector2>();
+        float currentSpeed = speed * (_actionMap.Player.Slow.IsPressed() ? slowMag : 1f); // 減速
+        transform.position += (Vector3)moveInput * currentSpeed * Time.deltaTime;
+        
 
-        transform.position = pos;
         LimitPosition(this.transform);
 
 
@@ -56,8 +57,7 @@ public class Player : Unit
             Debug.Log("ボム使用");
         }
         
-        // 減速
-        slowMag = _actionMap.Player.Slow.IsPressed() ? 0.5f : 1f;
+
         
     }
     

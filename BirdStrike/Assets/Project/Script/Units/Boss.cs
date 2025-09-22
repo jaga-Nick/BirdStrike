@@ -21,6 +21,9 @@ public class Boss : Enemy
     float fireTimer3 = 0;
 
     Missile missile = null;
+    
+    public int radialShotCount = 5; // 放射状に発射する弾の数
+    public float radialShotSpreadAngle = 90f; // 弾が広がる全体の角度
 
     public override void OnStart()
     {
@@ -56,6 +59,46 @@ public class Boss : Enemy
         }
 
         
+    }
+    
+    public override void Fire()
+    {
+        if (fireTime > 1f / fireRate)
+        {
+            // 弾が1発だけの場合は中央に発射
+            if (radialShotCount <= 1)
+            {
+                base.Fire(); // 元の直進弾を撃つ処理を呼ぶ
+                return;
+            }
+
+            // 弾を発射する角度のステップを計算
+            float angleStep = radialShotSpreadAngle / (radialShotCount - 1);
+            float startAngle = -radialShotSpreadAngle / 2;
+
+            // 指定された数だけ弾を生成
+            for (int i = 0; i < radialShotCount; i++)
+            {
+                // 現在の弾の角度を計算
+                float currentAngle = startAngle + (angleStep * i);
+                
+                // 角度を回転（Quaternion）に変換
+                Quaternion rotation = Quaternion.Euler(0, 0, currentAngle);
+                
+                // 左方向のベクトルを回転させて、弾の発射方向を決定
+                Vector3 shotDirection = rotation * Vector3.left;
+
+                // 弾を生成し、パラメータを設定
+                GameObject go = Instantiate(bulletTemplate);
+                go.transform.position = firePoint.position;
+                go.transform.rotation = Quaternion.FromToRotation(Vector3.left, shotDirection);
+                Element bullet = go.GetComponent<Element>();
+                bullet.direction = shotDirection.normalized;
+                bullet.side = this.side;
+            }
+            
+            fireTime = 0f;
+        }
     }
 
     IEnumerator UltraAttack()

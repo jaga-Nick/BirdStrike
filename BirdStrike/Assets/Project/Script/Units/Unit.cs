@@ -80,7 +80,7 @@ public class Unit : MonoBehaviour
         hp = MaxHP;
     }
 
-    public void Fire()
+    public virtual void Fire()
     {
         if (fireTime > 1f / fireRate)
         {
