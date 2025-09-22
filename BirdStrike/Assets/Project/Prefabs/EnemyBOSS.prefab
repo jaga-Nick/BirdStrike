@@ -991,7 +991,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406e5f68d7b9904786b86bbd0a6ad5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  side: 0
+  side: 2
   life: 3
   rigidbodyBird: {fileID: 3576320898584160610}
   ani: {fileID: 8996216226325494212}

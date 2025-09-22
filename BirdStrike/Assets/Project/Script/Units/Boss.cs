@@ -101,6 +101,8 @@ public class Boss : Enemy
     {
         while (true)
         {
+            Debug.Log("現在の状態" + currentPhase);
+            
             switch (currentPhase)
             {
                 case BossPhase.Normal:
