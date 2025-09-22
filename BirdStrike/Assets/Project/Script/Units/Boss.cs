@@ -35,12 +35,15 @@ public class Boss : Enemy
         StartCoroutine(Enter());
     }
     
-    // --- ▼▼▼ 新しい初期化メソッドを追加 ▼▼▼ ---
     public void InitializeParts(List<BossPart> spawnedParts, Player player)
     {
         this.target = player;
         this.parts = spawnedParts;
         initialPartsCount = parts.Count;
+        
+        // ログを追加して、初期状態を明確にする
+        Debug.Log("Boss initialized with " + initialPartsCount + " parts.");
+        
         UpdatePhase();
 
         // 各部位のOnDeathAsObservableをUniRxで購読する
@@ -48,24 +51,23 @@ public class Boss : Enemy
         {
             if (part != null)
             {
+                part.SetTarget(player);
                 part.OnDeathAsObservable
                     .Subscribe(OnPartDestroyed)
                     .AddTo(this.disposables); // 親クラスのdisposablesを利用
             }
         }
     }
-    // --- ▲▲▲ 新しい初期化メソッドを追加 ▲▲▲ ---
 
     private void OnPartDestroyed(Unit sender)
     {
+        Debug.Log(sender.gameObject.name + " destroyed! Boss received death notification.");
+
         var destroyedPart = sender as BossPart;
         if (destroyedPart != null)
         {
-            int index = parts.IndexOf(destroyedPart);
-            if (index != -1)
-            {
-                parts[index] = null;
-            }
+            // OnDeathAsObservableは一度しか呼ばれないので、安全に直接リストから削除できる
+            parts.Remove(destroyedPart);
         }
         UpdatePhase();
     }
@@ -73,6 +75,8 @@ public class Boss : Enemy
     private void UpdatePhase()
     {
         int remainingParts = parts.Count(part => part != null);
+        BossPhase oldPhase = currentPhase;
+        
         if (remainingParts == initialPartsCount)
         {
             currentPhase = BossPhase.Normal;
@@ -88,6 +92,15 @@ public class Boss : Enemy
             isBodyInvincible = false;
             Debug.Log("BOSS is SERIOUS! Body is now vulnerable!");
         }
+        
+        if (oldPhase != currentPhase)
+        {
+            Debug.Log("Boss phase changed to: " + currentPhase + ". Remaining parts: " + remainingParts);
+            if (!isBodyInvincible)
+            {
+                Debug.Log("Boss body is now vulnerable!");
+            }
+        }
     }
 
     IEnumerator Enter()
@@ -101,12 +114,12 @@ public class Boss : Enemy
     {
         while (true)
         {
-            Debug.Log("現在の状態" + currentPhase);
             
             switch (currentPhase)
             {
                 case BossPhase.Normal:
                     Fire();
+
                     break;
                 case BossPhase.Angry:
                     Fire2();

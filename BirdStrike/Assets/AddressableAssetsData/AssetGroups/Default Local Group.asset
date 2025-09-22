@@ -18,27 +18,42 @@ MonoBehaviour:
   m_GUID: fb25fac5f20c9ac41b801bdaba520133
   m_SerializeEntries:
   - m_GUID: 79d606a1b84e6b44cb1d0578221584b6
-    m_Address: Assets/Project/Scenes/Config.unity
+    m_Address: Config
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 11bffeab05ff16b4e9bdd8bf2131b34a
-    m_Address: Assets/Project/Scenes/GameClear.unity
+    m_Address: GameClear
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3e8954f09335a5a49a3346ba457d684f
-    m_Address: Assets/Project/Scenes/GameOver.unity
+    m_Address: GameOver
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 76fbbd8e8cb08ff438095a02c8ce6a0e
-    m_Address: Assets/Project/Scenes/InGame.unity
+    m_Address: InGame
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1c61e925bc785541baee7288610912f
-    m_Address: Assets/Project/Scenes/Title.unity
+    m_Address: Title
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 374395f1d0645b64daa116db33b694a4
+    m_Address: Player
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82d85640becffaa4f8d6418f67419136
+    m_Address: EnemyBOSS
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 122245c3dbf8f574aabf157a0ae54849
+    m_Address: Enemy
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

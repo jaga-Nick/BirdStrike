@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UniRx; // UniRxの名前空間を追加
-using System;  // IDisposableのために追加
+using UniRx;
+using System;
 
 public class Unit : MonoBehaviour, IDisposable
 {
@@ -15,34 +15,40 @@ public class Unit : MonoBehaviour, IDisposable
     public float speed = 5f;
     public float fireRate = 10f;
 
-    // --- ▼▼▼ OnDeathイベントをUniRxのSubjectに置き換え ▼▼▼ ---
-    // public delegate void DeathNotify(Unit sender);
-    // public event DeathNotify OnDeath;
     private readonly Subject<Unit> _onDeathSubject = new Subject<Unit>();
     public IObservable<Unit> OnDeathAsObservable => _onDeathSubject;
-    // --- ▲▲▲ OnDeathイベントをUniRxのSubjectに置き換え ▲▲▲ ---
 
     public UnityAction<int> OnScore;
     public GameObject bulletTemplate;
     public Transform firePoint;
     protected Vector3 initPos;
     protected bool isFlying = false;
-    public float hp = 10f;
-    public float HP => this.hp;
+
+    public float hp;
     public float MaxHP = 10f;
+    public float HP => this.hp;
+
     public float Attack;
     protected float fireTime = 0;
-    public bool desoryOnDeath = false;
+    
+    // --- ▼▼▼ タイポ修正 ▼▼▼ ---
+    public bool destroyOnDeath = false;
+    // --- ▲▲▲ タイポ修正 ▲▲▲ ---
 
-    // --- ▼▼▼ UniRxの購読を管理するためのオブジェクトを追加 ▼▼▼ ---
     protected CompositeDisposable disposables = new CompositeDisposable();
-    // --- ▲▲▲ UniRxの購読を管理するためのオブジェクトを追加 ▲▲▲ ---
+
+    // --- ▼▼▼ HP初期化をAwakeに移動 ▼▼▼ ---
+    void Awake()
+    {
+        hp = MaxHP;
+        ani = GetComponent<Animator>();
+        initPos = transform.position;
+    }
+    // --- ▲▲▲ HP初期化をAwakeに移動 ▲▲▲ ---
 
     void Start()
     {
-        ani = GetComponent<Animator>();
         Idle();
-        initPos = transform.position;
         OnStart();
     }
 
@@ -99,17 +105,12 @@ public class Unit : MonoBehaviour, IDisposable
         hp = 0;
         death = true;
         ani.SetTrigger("Die");
-
-        // --- ▼▼▼ OnDeathの通知をUniRx形式に変更 ▼▼▼ ---
-        // if (OnDeath != null)
-        // {
-        //     OnDeath(this);
-        // }
         _onDeathSubject.OnNext(this);
-        // --- ▲▲▲ OnDeathの通知をUniRx形式に変更 ▲▲▲ ---
-
-        if (desoryOnDeath)
+        
+        // --- ▼▼▼ タイポ修正 ▼▼▼ ---
+        if (destroyOnDeath)
             Destroy(gameObject, 0.2f);
+        // --- ▲▲▲ タイポ修正 ▲▲▲ ---
     }
 
     public void Damage(float power)
@@ -130,7 +131,6 @@ public class Unit : MonoBehaviour, IDisposable
         }
     }
 
-    // --- ▼▼▼ オブジェクト破棄時に購読を解除する処理を追加 ▼▼▼ ---
     private void OnDestroy()
     {
         Dispose();
@@ -141,5 +141,4 @@ public class Unit : MonoBehaviour, IDisposable
         disposables.Dispose();
         _onDeathSubject.Dispose();
     }
-    // --- ▲▲▲ オブジェクト破棄時に購読を解除する処理を追加 ▲▲▲ ---
 }

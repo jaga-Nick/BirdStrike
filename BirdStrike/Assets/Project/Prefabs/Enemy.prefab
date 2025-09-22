@@ -499,7 +499,6 @@ GameObject:
   - component: {fileID: 8996216226325494212}
   - component: {fileID: 3576320898584160610}
   - component: {fileID: 134610782169268333}
-  - component: {fileID: 7078038871053675802}
   - component: {fileID: 684234250194526151}
   m_Layer: 0
   m_Name: Enemy
@@ -608,33 +607,6 @@ CircleCollider2D:
   m_Offset: {x: -0.06643772, y: 0}
   serializedVersion: 2
   m_Radius: 0.43356228
---- !u!114 &7078038871053675802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9217452506801643721}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5a193dda958eab4bbd657bc5ed28eb7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  side: 2
-  life: 3
-  rigidbodyBird: {fileID: 3576320898584160610}
-  ani: {fileID: 8996216226325494212}
-  speed: 5
-  fireRate: 1
-  bulletTemplate: {fileID: 3522430151264285694, guid: 530da914a9fd5ff46bd30ba64566fbb8, type: 3}
-  firePoint: {fileID: 9120910204162412589}
-  hp: 1
-  MaxHP: 1
-  Attack: 0
-  desoryOnDeath: 1
-  lifetime: 4
-  range: {x: 0, y: 0}
-  enemyType: 1
 --- !u!114 &684234250194526151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -652,12 +624,13 @@ MonoBehaviour:
   rigidbodyBird: {fileID: 3576320898584160610}
   ani: {fileID: 8996216226325494212}
   speed: 5
-  fireRate: 10
+  fireRate: 1.3
   bulletTemplate: {fileID: 3522430151264285694, guid: 530da914a9fd5ff46bd30ba64566fbb8, type: 3}
   firePoint: {fileID: 8159792652212041964}
-  hp: 10
-  MaxHP: 10
+  hp: 5
+  MaxHP: 5
   Attack: 0
-  desoryOnDeath: 0
+  destroyOnDeath: 1
   moveSpeed: 2
   moveDistance: 1
+  battery: {fileID: 5722764225367492330}
