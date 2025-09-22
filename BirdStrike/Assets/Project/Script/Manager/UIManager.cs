@@ -9,9 +9,9 @@ public class UIManager : MonoSingleton<UIManager>
     public GameObject uiIngame;
     public GameObject uiGameOver;
 
-    public Slider hpbar;
+    //public Slider hpbar;
     public Text uiLife;
-    public Text uiLevelName;
+    //public Text uiLevelName;
     public Text uiLevelStartName;
     public Text uiLevelEndText;
 
@@ -32,7 +32,6 @@ public class UIManager : MonoSingleton<UIManager>
 
     public void ShowLevelStart(string name)
     {
-        uiLevelName.text = name;
         uiLevelStartName.text = name;
         
         uiLevelStart.SetActive(true);
@@ -47,11 +46,11 @@ public class UIManager : MonoSingleton<UIManager>
     {
         uiLevelEndText.text = "YOU WIN";
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        hpbar.value = Mathf.Lerp(hpbar.value, GameManager.Instance.player.HP, 0.1f);
+        
+        // playerが生成済みの場合のみ残機表示を更新する
         if (GameManager.Instance.player != null)
             uiLife.text = GameManager.Instance.player.life.ToString();
     }
@@ -61,7 +60,6 @@ public class UIManager : MonoSingleton<UIManager>
         this.uiReady.SetActive(GameManager.Instance.Status == GAME_STATUS.READY);
         this.uiIngame.SetActive(GameManager.Instance.Status == GAME_STATUS.INGAME);
         this.uiGameOver.SetActive(GameManager.Instance.Status == GAME_STATUS.OVER);
-        hpbar.maxValue = GameManager.Instance.player.MaxHP;
-        hpbar.value = GameManager.Instance.player.HP;
+        
     }
 }

@@ -418,12 +418,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   side: 1
+  life: 3
   rigidbodyBird: {fileID: 3576320898584160610}
   ani: {fileID: 8996216226325494212}
   speed: 5
-  fireRate: 2
+  fireRate: 2.5
   bulletTemplate: {fileID: 3522430151264285694, guid: 2a2a97683f70b5548889146ff343a8ea, type: 3}
   firePoint: {fileID: 5599453413037801670}
-  HP: 10
-  MaxHP: 10
+  hp: 1
+  MaxHP: 1
+  Attack: 0
   desoryOnDeath: 0
+  invincibleTime: 3
+  slowMag: 0.5
