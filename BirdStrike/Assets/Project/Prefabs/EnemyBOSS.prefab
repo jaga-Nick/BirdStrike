@@ -875,7 +875,7 @@ GameObject:
   - component: {fileID: 2702088321843945096}
   m_Layer: 0
   m_Name: EnemyBOSS
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1008,8 +1008,8 @@ MonoBehaviour:
   parts:
   - {fileID: 0}
   - {fileID: 0}
-  bossMoveSpeed: 1
-  bossMoveDistance: 0.5
+  moveSpeed: 1
+  moveDistance: 0.5
   missileTemplate: {fileID: 206091966701159305, guid: 493c45282a4677d46a01f15f946d11ac, type: 3}
   firePoint2: {fileID: 1577786802272598356}
   firePoint3: {fileID: 5580941030072816870}

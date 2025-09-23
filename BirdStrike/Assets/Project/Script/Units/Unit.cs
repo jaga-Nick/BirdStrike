@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Events;
 using UniRx;
@@ -14,6 +16,8 @@ public class Unit : MonoBehaviour, IDisposable
     protected bool death = false;
     public float speed = 5f;
     public float fireRate = 10f;
+    
+    protected string bulletName;
 
     private readonly Subject<Unit> _onDeathSubject = new Subject<Unit>();
     public IObservable<Unit> OnDeathAsObservable => _onDeathSubject;
@@ -73,9 +77,18 @@ public class Unit : MonoBehaviour, IDisposable
     {
         if (fireTime > 1f / fireRate)
         {
-            GameObject go = Instantiate(bulletTemplate);
+            if (string.IsNullOrEmpty(bulletName)) return;
+
+            GameObject go = BulletManager.Instance.GetBullet(this.bulletName);
+            if(go == null) return;
+            
+            var bulletData = DataManager.Instance.GetBulletData(this.bulletName);
+            var bulletComp = go.GetComponent<Bullet>();
+
+            bulletComp.Initialize(bulletData, this.side);
             go.transform.position = firePoint.position;
-            go.GetComponent<Element>().direction = side == SIDE.PLAYER ? Vector3.right : Vector3.left;
+            bulletComp.direction = this.side == SIDE.PLAYER ? Vector3.right: Vector3.left;
+            
             fireTime = 0f;
         }
     }

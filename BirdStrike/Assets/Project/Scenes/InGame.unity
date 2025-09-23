@@ -1166,6 +1166,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 826204412}
   m_CullTransparentMesh: 1
+--- !u!1 &928286804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 928286806}
+  - component: {fileID: 928286805}
+  m_Layer: 0
+  m_Name: BulletManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &928286805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 928286804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 866bbfb772ac405084948b7bd5c6adba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &928286806
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 928286804}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.271448, y: 3.2786977, z: -0.17006464}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1105701286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1952,12 +1996,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   status: 0
   player: {fileID: 0}
-  currentLevelId: 1
-  bossInitialPosition: {x: 15, y: 1.4, z: 0}
-  bossEntryTargetPosition: {x: 5, y: 1.4, z: 0}
-  bossPartEntryTargetPositions:
-  - {x: 2, y: 2, z: 0}
-  - {x: 2, y: -2, z: 0}
 --- !u!4 &1980058127
 Transform:
   m_ObjectHideFlags: 0
@@ -2308,3 +2346,4 @@ SceneRoots:
   - {fileID: 363655940}
   - {fileID: 1980058127}
   - {fileID: 1570451533}
+  - {fileID: 928286806}

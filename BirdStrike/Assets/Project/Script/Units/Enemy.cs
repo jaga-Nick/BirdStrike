@@ -37,7 +37,7 @@ public class Enemy : Unit
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        Element bullet = col.gameObject.GetComponent<Element>();
+        Bullet bullet = col.gameObject.GetComponent<Bullet>();
         if (bullet == null)
         {
             return;

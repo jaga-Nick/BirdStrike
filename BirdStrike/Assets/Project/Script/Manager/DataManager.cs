@@ -1,13 +1,13 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.IO;
-#if UNITY_ANDROID && !UNITY_EDITOR
-using UnityEngine.Networking;
-#endif
+using System.Collections.Generic;
+using System.Linq;
 
 [System.Serializable]
 public class GameDataWrapper
 {
+    public List<BulletData> bulletDatabase;
     public PlayerData playerData;
     public BossData bossData;
 }
@@ -16,19 +16,37 @@ public class DataManager : MonoSingleton<DataManager>
 {
     public PlayerData Player { get; private set; }
     public BossData Boss { get; private set; }
-    public bool IsDataLoaded { get; private set; } = false; // データが正常に読み込めたか
+    private Dictionary<string, BulletData> _bulletDataDict;
+    public bool IsDataLoaded { get; private set; } = false;
+
+    public BulletData GetBulletData(string bulletName)
+    {
+        if (_bulletDataDict != null && _bulletDataDict.TryGetValue(bulletName, out BulletData data))
+        {
+            return data;
+        }
+        Debug.LogError($"BulletData with name '{bulletName}' not found!");
+        return null;
+    }
+    
+    // --- ▼▼▼ 追加 ▼▼▼ ---
+    public List<BulletData> GetAllBulletData()
+    {
+        return _bulletDataDict.Values.ToList();
+    }
+    // --- ▲▲▲ 追加 ▲▲▲ ---
 
     public async UniTask LoadDataAsync()
     {
-        IsDataLoaded = false; // 読み込み開始時にリセット
+        IsDataLoaded = false;
         string filePath = Path.Combine(Application.streamingAssetsPath, "game_data.json");
         string jsonString;
 
 #if UNITY_ANDROID && !UNITY_EDITOR
-        using (var request = UnityWebRequest.Get(filePath))
+        using (var request = UnityEngine.Networking.UnityWebRequest.Get(filePath))
         {
             await request.SendWebRequest();
-            if (request.result != UnityWebRequest.Result.Success)
+            if (request.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Failed to load data file on Android: " + request.error);
                 return;
@@ -54,12 +72,13 @@ public class DataManager : MonoSingleton<DataManager>
         {
             GameDataWrapper dataWrapper = JsonUtility.FromJson<GameDataWrapper>(jsonString);
             
-            if (dataWrapper == null || dataWrapper.playerData == null || dataWrapper.bossData == null)
+            if (dataWrapper == null || dataWrapper.playerData == null || dataWrapper.bossData == null || dataWrapper.bulletDatabase == null)
             {
-                Debug.LogError("Failed to parse JSON. Check if the JSON structure and key names (e.g., 'playerData') match the C# classes.");
+                Debug.LogError("Failed to parse JSON.");
                 return;
             }
 
+            _bulletDataDict = dataWrapper.bulletDatabase.ToDictionary(data => data.bulletName);
             Player = dataWrapper.playerData;
             Boss = dataWrapper.bossData;
             IsDataLoaded = true;

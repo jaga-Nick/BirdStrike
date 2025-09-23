@@ -1,29 +1,43 @@
 using System.Collections.Generic;
-using UnityEngine; // Vector3のため
+using UnityEngine;
 
-// このファイルに、JSON化したいデータをすべて定義していきます。
+[System.Serializable]
+public class BulletData
+{
+    public string bulletName;
+    public string addressableKey;
+    public float speed; // 弾の基本速度
+    public float power;
+    public int durability;
+    public int scoreValue;
+    // ミサイル固有のパラメータ
+    public float homingDuration;
+    public float maxTurnSpeed;
+}
 
 [System.Serializable]
 public class PlayerData
 {
     public string addressableKey;
+    public string bulletName; // プレイヤーが撃つ弾の名前
     public float speed;
-    public float slowMagnification; // 低速時の速度倍率
+    public float slowMagnification;
     public float fireRate;
-    public int initialLife;
+    public int life;
     public float invincibleTime;
+    public int bombCount;
 }
 
 [System.Serializable]
 public class BossPartData
 {
     public string addressableKey;
+    public string bulletName; // 部位が撃つ弾の名前
     public float maxHp;
     public float fireRate;
     public float moveSpeed; 
     public float moveDistance;
     public Vector3 entryTargetPosition;
-
 }
 
 [System.Serializable]
@@ -42,23 +56,27 @@ public class BossData
 [System.Serializable]
 public class PhaseData
 {
-    public string phaseName; // "Normal", "Angry", "Serious"
+    public string phaseName;
     public List<AttackCommand> attackSequence;
 }
 
 [System.Serializable]
 public class AttackCommand
 {
-    public string commandType; // "WAIT", "SHOOT_RADIAL", "SHOOT_TARGET", "MOVE", "ULTRA_ATTACK"
+    public string commandType;
     
     // WAIT
     public float duration;
 
-    // SHOOT
-    public string bulletAddressableKey;
+    // SHOOT系コマンド共通
+    public string bulletName; // どの弾を撃つか名前で指定
+    
+    // SHOOT_RADIAL / SHOOT_TARGET
     public int count;
+    public float interval;
+
+    // SHOOT_RADIAL
     public float spreadAngle;
-    public float interval; // 弾を発射する間隔
 
     // MOVE
     public Vector3 targetPosition;

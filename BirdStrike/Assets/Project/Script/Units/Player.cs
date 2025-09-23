@@ -4,19 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Common;
+using UniRx;
+using UnityEngine.InputSystem;
 
 public class Player : Unit
 {
     private float invincibleTime;
-
     private float _slowMagnification;
-
     private float timer = 0;
 
     Vector2 worldPosLeftBottom;
     Vector2 worldPosTopRight;
     
     private InputSystem_Actions _actionMap;
+    
+    public IReadOnlyReactiveProperty<int> BombCount => _bombCount;
+    private readonly ReactiveProperty<int> _bombCount = new ReactiveProperty<int>(3);
 
     private void Awake()
     {
@@ -36,54 +39,42 @@ public class Player : Unit
 
         timer += Time.deltaTime;
         
-        
         Vector2 moveInput = _actionMap.Player.Move.ReadValue<Vector2>();
-        float currentSpeed = speed * (_actionMap.Player.Slow.IsPressed() ? _slowMagnification : 1f); // 減速
+        float currentSpeed = speed * (_actionMap.Player.Slow.IsPressed() ? _slowMagnification : 1f);
         transform.position += (Vector3)moveInput * currentSpeed * Time.deltaTime;
         
-
         LimitPosition(this.transform);
 
-
-        // 攻撃
         if (_actionMap.Player.Fire.IsPressed())
         {
             Fire();
         }
-        
-        // ボム
-        if (_actionMap.Player.Bomb.WasPressedThisFrame())
-        {
-            Debug.Log("ボム使用");
-        }
-        
-
-        
     }
     
-    /// <summary>
-    /// 初期化
-    /// </summary>
     public void Initialize(PlayerData data)
     {
-        // JSONから読み込んだデータでパラメータを初期化
+        this.bulletName = data.bulletName;
         this.speed = data.speed;
         this.fireRate = data.fireRate;
-        this.life = data.initialLife;
+        this.life = data.life;
         this.invincibleTime = data.invincibleTime;
         this._slowMagnification = data.slowMagnification;
+        this._bombCount.Value = data.bombCount;
         
         Debug.Log("Player initialized with data. Speed: " + this.speed);
     }
     
-    /// <summary>
-    /// 入力初期化
-    /// </summary>
     public void InitInput()
     {
         var manager = InputSystemActionsManager.Instance();
         _actionMap = manager.GetInputSystem_Actions();
         manager.PlayerEnable();
+        
+        Observable.FromEvent<InputAction.CallbackContext>(
+                handler => _actionMap.Player.Bomb.started += handler,
+                handler => _actionMap.Player.Bomb.started -= handler)
+            .Subscribe(_ => UseBomb())
+            .AddTo(this.disposables);
     }
 
     public void LimitPosition(Transform trNeedLimit)
@@ -92,7 +83,41 @@ public class Player : Unit
                                            Mathf.Clamp(trNeedLimit.position.y, worldPosLeftBottom.y, worldPosTopRight.y),
                                            trNeedLimit.position.z);
     }
+    
+    private void UseBomb()
+    {
+        if (_bombCount.Value <= 0) { return; }
 
+        _bombCount.Value--;
+        Debug.Log("BOMB! Remaining: " + _bombCount.Value);
+
+        var activeBullets = new List<Bullet>(BulletManager.Instance.ActiveEnemyBullets);
+        int scoreGained = 0;
+
+        foreach (var bullet in activeBullets)
+        {
+            if (bullet != null && bullet.gameObject.activeSelf)
+            {
+                scoreGained += bullet.scoreValue;
+                // --- ▼▼▼ エラー修正1 ▼▼▼ ---
+                // ReturnBulletの引数を(GameObject, string, SIDE)に合わせる
+                BulletManager.Instance.ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
+                // --- ▲▲▲ エラー修正1 ▲▲▲ ---
+            }
+        }
+        
+        Missile[] allMissiles = FindObjectsOfType<Missile>();
+        foreach (var missile in allMissiles)
+        {
+            scoreGained += missile.scoreValue;
+            Destroy(missile.gameObject);
+        }
+        
+        if (scoreGained > 0)
+        {
+            GameManager.Instance.AddScore(scoreGained);
+        }
+    }
 
     public void Rebirth()
     {
@@ -114,44 +139,28 @@ public class Player : Unit
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if(death)
-            return;
-        if (Isinvincible)
+        if(death || Isinvincible)
             return;
 
         Item item = col.gameObject.GetComponent<Item>();
         if(item != null)
         {
             item.Use(this);
-        }
-
-        Element bullet = col.gameObject.GetComponent<Element>();
-        Enemy enemy = col.gameObject.GetComponent<Enemy>();
-        if (bullet == null && enemy == null)
-        { 
             return;
         }
 
-        if(bullet != null && bullet.side == SIDE.ENEMY)
+        Bullet bullet = col.gameObject.GetComponent<Bullet>();
+        BossPart part = col.gameObject.GetComponent<BossPart>();
+
+        if ((bullet != null && bullet.side == SIDE.ENEMY) || col.GetComponent<Enemy>() != null || part != null)
         {
-            hp = hp - bullet.power;
-            if(hp <= 0)
-            {
-                Die();
-            }
-        }
-        if(enemy != null)
-        {
-            hp = 0;
-                Die();
+            Die();
         }
     }
 
     private void OnTriggerExit2D(Collider2D col)
     {
-        if (death)
-            return;
-        if(Isinvincible)
+        if (death || Isinvincible)
             return;
 
         if (col.gameObject.name.Equals("ScoreArea"))

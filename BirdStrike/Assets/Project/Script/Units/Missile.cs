@@ -2,78 +2,69 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : Element
+public class Missile : Bullet
 {
     public Transform target;
-
     private bool running = false;
-
     public GameObject fxExpold;
     
-    private float homingDuration = 30f; // 誘導が有効な時間（秒）
-    private float maxTurnSpeed = 30f;   // 1秒あたりの最大旋回角度（度）
-    
-    private void Awake()
+    private float homingDuration; // 誘導が有効な時間（秒）
+    private float maxTurnSpeed;   // 1秒あたりの最大旋回角度（度）
+
+    public void Initialize(BulletData data, SIDE ownerSide)
     {
-        // ミサイルの初期耐久力を設定
-        this.durability = 3;
+        // 親クラス（Element/Bullet）のパラメータを設定
+        this.power = data.power;
+        this.durability = data.durability;
+        this.scoreValue = data.scoreValue;
+        this.speed = data.speed;
+        this.side = ownerSide;
+        this.lifeTime = 35f; // ミサイルは長めに
+
+        // ミサイル固有のパラメータを設定
+        this.homingDuration = data.homingDuration;
+        this.maxTurnSpeed = data.maxTurnSpeed;
     }
-    
+
     public override void OnUpdate()
     {
-        if (!running) { return; }
-        // 誘導タイマーを減算
+        if (!running)
+        {
+            return;
+        }
+
         if (homingDuration > 0)
         {
             homingDuration -= Time.deltaTime;
         }
         
-        // 誘導が有効、かつターゲットが存在する場合のみ追尾する
+
+        // 1. 現在の進行方向を、回転に基づいて正しく計算する
+        //    （スプライトの正面が左向きなので、Vector3.leftを基準にする）
+        Vector3 currentDirection = transform.rotation * Vector3.left;
+
+        Vector3 finalDirection;
+
+        // 2. 誘導が有効な場合、ターゲットへの方向を計算する
         if (target != null && homingDuration > 0)
         {
-            // ターゲットへの方向ベクトルを計算
             Vector3 targetDirection = (target.position - transform.position).normalized;
-
-            // 現在の進行方向（左向きを基準とする）
-            Vector3 currentDirection = transform.rotation * Vector3.left;
-
-            // 1フレームあたりに回転できる最大角度（ラジアン）
             float maxRadiansDelta = maxTurnSpeed * Mathf.Deg2Rad * Time.deltaTime;
-
-            // 最大旋回角度の範囲で、ターゲットの方向へ滑らかに向きを変える
-            Vector3 newDirection = Vector3.RotateTowards(currentDirection, targetDirection, maxRadiansDelta, 0.0f);
             
-            // 新しい向きをQuaternionとして設定
-            transform.rotation = Quaternion.FromToRotation(Vector3.left, newDirection);
-            
-            // 新しい向きへ前進
-            transform.position += newDirection * speed * Time.deltaTime;
-            
-            
-            // --- ▼▼▼ デバッグ用Rayの追加 ▼▼▼ ---
-            // ターゲットへの理想的な方向を緑色で表示
-            Debug.DrawRay(transform.position, targetDirection * 5f, Color.green);
-
-            // 旋回限界角度を黄色で表示
-            Quaternion leftLimit = Quaternion.AngleAxis(-maxTurnSpeed / 2, Vector3.forward);
-            Quaternion rightLimit = Quaternion.AngleAxis(maxTurnSpeed / 2, Vector3.forward);
-            Debug.DrawRay(transform.position, (transform.rotation * leftLimit) * Vector3.left * 3f, Color.yellow);
-            Debug.DrawRay(transform.position, (transform.rotation * rightLimit) * Vector3.left * 3f, Color.yellow);
-            // --- ▲▲▲ デバッグ用Rayの追加 ▲▲▲ ---
+            // 現在の進行方向からターゲットの方向へ、旋回性能の範囲で向きを変える
+            finalDirection = Vector3.RotateTowards(currentDirection, targetDirection, maxRadiansDelta, 0.0f);
         }
         else
         {
-            // 誘導が切れたら、現在の向きのまま直進する
-            Vector3 currentDirection = transform.rotation * Vector3.left;
-            transform.position += currentDirection * speed * Time.deltaTime;
-        }
-        
-        // ターゲットとの距離が近ければ爆発
-        if(target != null && Vector3.Distance(transform.position, target.position) < 0.5f)
-        {
-            Explod();
+            // 誘導が切れたら直進
+            finalDirection = currentDirection;
         }
 
+        // 3. 計算された新しい進行方向に、ミサイルの正面（左向き）が合うように回転を更新する
+        transform.rotation = Quaternion.FromToRotation(Vector3.left, finalDirection);
+        
+        // 4. 新しい進行方向へ前進する
+        transform.position += finalDirection * speed * Time.deltaTime;
     }
 
     public void Launch()
@@ -83,13 +74,27 @@ public class Missile : Element
 
     public void Explod()
     {
-        Instantiate(fxExpold, transform.position, Quaternion.identity);
-        Destroy(gameObject);
-
-        if(target != null)
+        if (fxExpold != null)
         {
-            Player p = target.GetComponent<Player>();
-            p.Damage(power);
+            Instantiate(fxExpold, transform.position, Quaternion.identity);
+        }
+        Destroy(gameObject);
+    }
+    
+    private new void OnTriggerEnter2D(Collider2D col)
+    {
+        // 親クラス（Element）の相殺処理を先に呼び出す
+        base.OnTriggerEnter2D(col);
+
+        // 衝突相手がプレイヤーだった場合
+        if (col.CompareTag("Player"))
+        {
+            Player p = col.GetComponent<Player>();
+            if (p != null)
+            {
+                p.Damage(power);
+            }
+            Explod(); // 爆発して消滅
         }
     }
 }

@@ -1,32 +1,64 @@
 {
+  "bulletDatabase": [
+    {
+      "bulletName": "PlayerBullet",
+      "addressableKey": "PlayerBullet",
+      "speed": 8.0,
+      "power": 1,
+      "durability": 1,
+      "scoreValue": 0
+    },
+    {
+      "bulletName": "EnemyBullet",
+      "addressableKey": "EnemyBullet",
+      "speed": 5.0,
+      "power": 1,
+      "durability": 1,
+      "scoreValue": 10
+    },
+    {
+      "bulletName": "missile",
+      "addressableKey": "missile",
+      "speed": 2.0,
+      "power": 2,
+      "durability": 10,
+      "scoreValue": 100,
+      "homingDuration": 30.0,
+      "maxTurnSpeed": 30.0
+    }
+  ],
   "playerData": {
     "addressableKey": "Player",
-    "speed": 15.0,
+    "bulletName": "PlayerBullet",
+    "speed": 5.0,
     "slowMagnification": 0.5,
     "fireRate": 2.5,
-    "initialLife": 3,
-    "invincibleTime": 3.0
+    "life": 3,
+    "invincibleTime": 3.0,
+    "bombCount": 3
   },
   "bossData": {
     "addressableKey": "EnemyBOSS",
     "maxHp": 30.0,
     "moveSpeed": 4.0,
     "moveDistance": 1,
-    "entryTargetPosition": { "x": 5.0, "y": 1.4, "z": 0.0 },
     "initialPosition": { "x": 15.0, "y": 1.4, "z": 0.0 },
+    "entryTargetPosition": { "x": 5.0, "y": 1.4, "z": 0.0 },
     "parts": [
       {
         "addressableKey": "Enemy",
+        "bulletName": "EnemyBullet",
         "maxHp": 10.0,
-        "fireRate": 1,
+        "fireRate": 1.5,
         "moveSpeed": 2,
         "moveDistance": 1,
         "entryTargetPosition": { "x": 2.0, "y": 2.0, "z": 0.0 }
       },
       {
         "addressableKey": "Enemy",
+        "bulletName": "EnemyBullet",
         "maxHp": 10.0,
-        "fireRate": 1,
+        "fireRate": 1.5,
         "moveSpeed": 2,
         "moveDistance": 1,
         "entryTargetPosition": { "x": 2.0, "y": -2.0, "z": 0.0 }
@@ -36,21 +68,32 @@
       {
         "phaseName": "Normal",
         "attackSequence": [
-          { "commandType": "SHOOT_RADIAL", "count": 5, "spreadAngle": 90, "interval": 0.1 },
-          { "commandType": "WAIT", "duration": 2.0 }
+          { "commandType": "SHOOT_TARGET", "bulletName": "EnemyBullet", "count": 3, "interval": 0.5 },
+          { "commandType": "SHOOT_RADIAL", "bulletName": "EnemyBullet", "count": 3, "spreadAngle": 90 },
+          { "commandType": "WAIT", "duration": 3.0 },
+          { "commandType": "ULTRA_ATTACK", "bulletName": "missile" },
+          { "commandType": "WAIT", "duration": 3.0 }
         ]
       },
       {
         "phaseName": "Angry",
         "attackSequence": [
-          { "commandType": "SHOOT_TARGET", "count": 3, "interval": 0.3 },
-          { "commandType": "WAIT", "duration": 1.5 }
+          { "commandType": "SHOOT_TARGET", "bulletName": "EnemyBullet", "count": 2, "interval": 0.5 },
+          { "commandType": "SHOOT_RADIAL", "bulletName": "EnemyBullet", "count": 3, "spreadAngle": 90 },
+          { "commandType": "SHOOT_TARGET", "bulletName": "EnemyBullet", "count": 4, "interval": 0.3 },
+          { "commandType": "WAIT", "duration": 2.0 },
+          { "commandType": "ULTRA_ATTACK", "bulletName": "missile" }
         ]
       },
       {
         "phaseName": "Serious",
         "attackSequence": [
-          { "commandType": "ULTRA_ATTACK" },
+          { "commandType": "SHOOT_RADIAL", "bulletName": "EnemyBullet", "count": 5, "spreadAngle": 90 },
+          { "commandType": "ULTRA_ATTACK", "bulletName": "missile" },
+          { "commandType": "WAIT", "duration": 3.0 },
+          { "commandType": "ULTRA_ATTACK", "bulletName": "missile" },
+          { "commandType": "SHOOT_TARGET", "bulletName": "EnemyBullet", "count": 4, "interval": 0.3 },
+          { "commandType": "SHOOT_RADIAL", "bulletName": "EnemyBullet", "count": 2, "spreadAngle": 90 },
           { "commandType": "WAIT", "duration": 5.0 }
         ]
       }

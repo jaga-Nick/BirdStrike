@@ -186,54 +186,49 @@ public class Boss : Enemy
                 await UniTask.Delay(System.TimeSpan.FromSeconds(command.duration), cancellationToken: token);
                 break;
             case "SHOOT_RADIAL":
-                // データを元に放射状弾のパラメータを一時的に上書き
-                this.radialShotCount = command.count;
-                this.radialShotSpreadAngle = command.spreadAngle;
-                Fire(); // 1回だけ発射
+                Fire(command);
                 break;
             case "SHOOT_TARGET":
-                // データを元に連射
                 for (int i = 0; i < command.count; i++)
                 {
                     if (death) break;
-                    Fire2();
+                    Fire2(command);
                     await UniTask.Delay(System.TimeSpan.FromSeconds(command.interval), cancellationToken: token);
                 }
                 break;
             case "ULTRA_ATTACK":
-                await UltraAttackAsync(token);
+                await UltraAttackAsync(command, token);
                 break;
         }
     }
 
-    public override void Fire()
+    public void Fire(AttackCommand command)
     {
-        if (fireTime > 1f / fireRate)
+        var bulletData = DataManager.Instance.GetBulletData(command.bulletName);
+        if (bulletData == null) return;
+
+        float angleStep = command.spreadAngle / (command.count > 1 ? command.count - 1 : 1);
+        float startAngle = command.count > 1 ? -command.spreadAngle / 2 : 0;
+        
+        for (int i = 0; i < command.count; i++)
         {
-            if (radialShotCount <= 1)
-            {
-                base.Fire();
-                return;
-            }
-            float angleStep = radialShotSpreadAngle / (radialShotCount - 1);
-            float startAngle = -radialShotSpreadAngle / 2;
-            for (int i = 0; i < radialShotCount; i++)
-            {
-                float currentAngle = startAngle + (angleStep * i);
-                Quaternion rotation = Quaternion.Euler(0, 0, currentAngle);
-                Vector3 shotDirection = rotation * Vector3.left;
-                GameObject go = Instantiate(bulletTemplate);
-                go.transform.position = firePoint.position;
-                go.transform.rotation = Quaternion.FromToRotation(Vector3.left, shotDirection);
-                Element bullet = go.GetComponent<Element>();
-                bullet.direction = shotDirection.normalized;
-                bullet.side = this.side;
-            }
-            fireTime = 0f;
+            float currentAngle = startAngle + (angleStep * i);
+            Quaternion rotation = Quaternion.Euler(0, 0, currentAngle);
+            Vector3 shotDirection = rotation * Vector3.left;
+
+            GameObject go = BulletManager.Instance.GetBullet(command.bulletName);
+            if (go == null) continue;
+            
+            go.transform.position = firePoint.position;
+            go.transform.rotation = Quaternion.FromToRotation(Vector3.left, shotDirection);
+            
+            var bullet = go.GetComponent<Bullet>();
+            bullet.Initialize(bulletData, this.side);
+            bullet.direction = shotDirection.normalized;
         }
     }
 
-    async UniTask UltraAttackAsync(CancellationToken token)
+    async UniTask UltraAttackAsync(AttackCommand command, CancellationToken token)
     {
         isSpecialMoving = true;
         await MoveToAsync(new Vector3(5, 4, 0), speed, token);
@@ -259,16 +254,19 @@ public class Boss : Enemy
         await UniTask.Delay(System.TimeSpan.FromSeconds(3), cancellationToken: token);
     }
 
-    public void Fire2()
+    public void Fire2(AttackCommand command)
     {
-        fireTimer2 += Time.deltaTime;
-        if (fireTimer2 > 1f / fireRate2)
-        {
-            GameObject go = Instantiate(bulletTemplate, firePoint2.position, battery.rotation);
-            Element bullent = go.GetComponent<Element>();
-            bullent.direction = (target.transform.position - firePoint2.position).normalized;
-            fireTimer2 = 0f;
-        }
+        var bulletData = DataManager.Instance.GetBulletData(command.bulletName);
+        if (bulletData == null) return;
+
+        GameObject go = BulletManager.Instance.GetBullet(command.bulletName);
+        if (go == null) return;
+
+        go.transform.position = firePoint2.position;
+        var bullet = go.GetComponent<Bullet>();
+        bullet.Initialize(bulletData, this.side);
+        bullet.direction = (target.transform.position - firePoint2.position).normalized;
+        go.transform.rotation = Quaternion.FromToRotation(Vector3.left, bullet.direction);
     }
 
     public void OnMissileLoad()
@@ -302,7 +300,7 @@ public class Boss : Enemy
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        Element bullet = col.gameObject.GetComponent<Element>();
+        Bullet bullet = col.gameObject.GetComponent<Bullet>();
         if (bullet == null) return;
         if (bullet.side == SIDE.PLAYER)
         {

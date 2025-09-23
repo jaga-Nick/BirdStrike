@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 3610026138133589437}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -425,9 +425,6 @@ MonoBehaviour:
   fireRate: 2.5
   bulletTemplate: {fileID: 3522430151264285694, guid: 2a2a97683f70b5548889146ff343a8ea, type: 3}
   firePoint: {fileID: 5599453413037801670}
-  hp: 1
   MaxHP: 1
   Attack: 0
-  desoryOnDeath: 0
-  invincibleTime: 3
-  slowMag: 0.5
+  destroyOnDeath: 0
