@@ -35,7 +35,8 @@
     "fireRate": 2.5,
     "life": 3,
     "invincibleTime": 3.0,
-    "bombCount": 3
+    "bombCount": 3,
+    "spawnPosition": { "x": -5.0, "y": 0.0, "z": 0.0 }
   },
   "bossData": {
     "addressableKey": "EnemyBOSS",
@@ -51,7 +52,8 @@
         "maxHp": 10.0,
         "fireRate": 1.5,
         "moveSpeed": 2,
-        "moveDistance": 1,
+        "moveDistanceY": 1.3,
+        "moveDistanceX": 0.5,
         "entryTargetPosition": { "x": 2.0, "y": 2.0, "z": 0.0 }
       },
       {
@@ -60,7 +62,8 @@
         "maxHp": 10.0,
         "fireRate": 1.5,
         "moveSpeed": 2,
-        "moveDistance": 1,
+        "moveDistanceY": 0.5,
+        "moveDistanceX": 1,
         "entryTargetPosition": { "x": 2.0, "y": -2.0, "z": 0.0 }
       }
     ],

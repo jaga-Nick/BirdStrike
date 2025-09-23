@@ -26,6 +26,7 @@ public class PlayerData
     public int life;
     public float invincibleTime;
     public int bombCount;
+    public Vector3 spawnPosition;
 }
 
 [System.Serializable]
@@ -36,7 +37,8 @@ public class BossPartData
     public float maxHp;
     public float fireRate;
     public float moveSpeed; 
-    public float moveDistance;
+    public float moveDistanceY;
+    public float moveDistanceX;
     public Vector3 entryTargetPosition;
 }
 

@@ -4,9 +4,9 @@ using System.Threading;
 
 public class BossPart : Unit
 {
-    [Header("Part Movement Settings")]
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float moveDistance = 1f;
+    private float moveSpeed;
+    private float moveDistanceY;
+    private float moveDistanceX;
 
     private Vector3 initialPosition;
     private Unit target;
@@ -18,8 +18,12 @@ public class BossPart : Unit
     {
         if (!entryComplete) { return; }
 
-        float yOffset = Mathf.Sin(Time.time * moveSpeed) * moveDistance;
-        transform.position = initialPosition + new Vector3(0, yOffset, 0);
+        float yOffset = Mathf.Sin(Time.time * moveSpeed) * moveDistanceY;
+        // 横にゆらゆら動く処理（Cosを使うと円や楕円のような動きになる）
+        float xOffset = Mathf.Cos(Time.time * moveSpeed) * moveDistanceX;
+        
+        
+        transform.position = initialPosition + new Vector3(xOffset, yOffset, 0);
 
         Fire();
     }
@@ -30,7 +34,8 @@ public class BossPart : Unit
         this.hp = data.maxHp;
         this.fireRate = data.fireRate;
         this.moveSpeed = data.moveSpeed;
-        this.moveDistance = data.moveDistance;
+        this.moveDistanceY = data.moveDistanceY;
+        this.moveDistanceX = data.moveDistanceX;
         this.bulletName = data.bulletName;
     }
     

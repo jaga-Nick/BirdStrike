@@ -60,6 +60,7 @@ public class Player : Unit
         this.invincibleTime = data.invincibleTime;
         this._slowMagnification = data.slowMagnification;
         this._bombCount.Value = data.bombCount;
+        this.initPos = data.spawnPosition;
         
         Debug.Log("Player initialized with data. Speed: " + this.speed);
     }
@@ -99,10 +100,8 @@ public class Player : Unit
             if (bullet != null && bullet.gameObject.activeSelf)
             {
                 scoreGained += bullet.scoreValue;
-                // --- ▼▼▼ エラー修正1 ▼▼▼ ---
-                // ReturnBulletの引数を(GameObject, string, SIDE)に合わせる
                 BulletManager.Instance().ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
-                // --- ▲▲▲ エラー修正1 ▲▲▲ ---
+
             }
         }
         

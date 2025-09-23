@@ -65,7 +65,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         var bossData = DataManager.Instance.Boss;
 
         // Player & Boss & Parts Spawn
-        GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, Vector3.zero, Quaternion.identity).ToUniTask(cancellationToken: token);
+        GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, playerData.spawnPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
         this.player = playerGO.GetComponent<Player>();
         this.player.OnDeathAsObservable.Subscribe(Player_OnDeath).AddTo(this.player);
         player.Initialize(playerData);
