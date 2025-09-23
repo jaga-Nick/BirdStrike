@@ -1,0 +1,59 @@
+{
+  "playerData": {
+    "addressableKey": "Player",
+    "speed": 15.0,
+    "slowMagnification": 0.5,
+    "fireRate": 2.5,
+    "initialLife": 3,
+    "invincibleTime": 3.0
+  },
+  "bossData": {
+    "addressableKey": "EnemyBOSS",
+    "maxHp": 30.0,
+    "moveSpeed": 4.0,
+    "moveDistance": 1,
+    "entryTargetPosition": { "x": 5.0, "y": 1.4, "z": 0.0 },
+    "initialPosition": { "x": 15.0, "y": 1.4, "z": 0.0 },
+    "parts": [
+      {
+        "addressableKey": "Enemy",
+        "maxHp": 10.0,
+        "fireRate": 1,
+        "moveSpeed": 2,
+        "moveDistance": 1,
+        "entryTargetPosition": { "x": 2.0, "y": 2.0, "z": 0.0 }
+      },
+      {
+        "addressableKey": "Enemy",
+        "maxHp": 10.0,
+        "fireRate": 1,
+        "moveSpeed": 2,
+        "moveDistance": 1,
+        "entryTargetPosition": { "x": 2.0, "y": -2.0, "z": 0.0 }
+      }
+    ],
+    "phases": [
+      {
+        "phaseName": "Normal",
+        "attackSequence": [
+          { "commandType": "SHOOT_RADIAL", "count": 5, "spreadAngle": 90, "interval": 0.1 },
+          { "commandType": "WAIT", "duration": 2.0 }
+        ]
+      },
+      {
+        "phaseName": "Angry",
+        "attackSequence": [
+          { "commandType": "SHOOT_TARGET", "count": 3, "interval": 0.3 },
+          { "commandType": "WAIT", "duration": 1.5 }
+        ]
+      },
+      {
+        "phaseName": "Serious",
+        "attackSequence": [
+          { "commandType": "ULTRA_ATTACK" },
+          { "commandType": "WAIT", "duration": 5.0 }
+        ]
+      }
+    ]
+  }
+}

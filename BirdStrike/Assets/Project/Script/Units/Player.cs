@@ -7,9 +7,9 @@ using Common;
 
 public class Player : Unit
 {
-    public float invincibleTime = 3f;
+    private float invincibleTime;
 
-    public float slowMag = 0.5f;
+    private float _slowMagnification;
 
     private float timer = 0;
 
@@ -38,7 +38,7 @@ public class Player : Unit
         
         
         Vector2 moveInput = _actionMap.Player.Move.ReadValue<Vector2>();
-        float currentSpeed = speed * (_actionMap.Player.Slow.IsPressed() ? slowMag : 1f); // 減速
+        float currentSpeed = speed * (_actionMap.Player.Slow.IsPressed() ? _slowMagnification : 1f); // 減速
         transform.position += (Vector3)moveInput * currentSpeed * Time.deltaTime;
         
 
@@ -63,6 +63,21 @@ public class Player : Unit
     
     /// <summary>
     /// 初期化
+    /// </summary>
+    public void Initialize(PlayerData data)
+    {
+        // JSONから読み込んだデータでパラメータを初期化
+        this.speed = data.speed;
+        this.fireRate = data.fireRate;
+        this.life = data.initialLife;
+        this.invincibleTime = data.invincibleTime;
+        this._slowMagnification = data.slowMagnification;
+        
+        Debug.Log("Player initialized with data. Speed: " + this.speed);
+    }
+    
+    /// <summary>
+    /// 入力初期化
     /// </summary>
     public void InitInput()
     {

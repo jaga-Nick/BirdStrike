@@ -32,11 +32,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 76fbbd8e8cb08ff438095a02c8ce6a0e
-    m_Address: InGame
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1c61e925bc785541baee7288610912f
     m_Address: Title
     m_ReadOnly: 0

@@ -24,27 +24,24 @@ public class Unit : MonoBehaviour, IDisposable
     protected Vector3 initPos;
     protected bool isFlying = false;
 
-    public float hp;
+    protected float hp;
     public float MaxHP = 10f;
     public float HP => this.hp;
 
     public float Attack;
     protected float fireTime = 0;
     
-    // --- ▼▼▼ タイポ修正 ▼▼▼ ---
     public bool destroyOnDeath = false;
-    // --- ▲▲▲ タイポ修正 ▲▲▲ ---
 
     protected CompositeDisposable disposables = new CompositeDisposable();
-
-    // --- ▼▼▼ HP初期化をAwakeに移動 ▼▼▼ ---
+    
     void Awake()
     {
         hp = MaxHP;
         ani = GetComponent<Animator>();
         initPos = transform.position;
     }
-    // --- ▲▲▲ HP初期化をAwakeに移動 ▲▲▲ ---
+
 
     void Start()
     {
@@ -107,10 +104,8 @@ public class Unit : MonoBehaviour, IDisposable
         ani.SetTrigger("Die");
         _onDeathSubject.OnNext(this);
         
-        // --- ▼▼▼ タイポ修正 ▼▼▼ ---
         if (destroyOnDeath)
             Destroy(gameObject, 0.2f);
-        // --- ▲▲▲ タイポ修正 ▲▲▲ ---
     }
 
     public void Damage(float power)

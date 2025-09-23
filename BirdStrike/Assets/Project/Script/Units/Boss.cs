@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UniRx; // UniRxの名前空間を追加
+using UniRx;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public class Boss : Enemy
 {
@@ -13,6 +15,15 @@ public class Boss : Enemy
     private int initialPartsCount;
     private BossPhase currentPhase;
     private bool isBodyInvincible = true;
+    
+    private BossData _bossData;
+    
+    [Header("Boss Movement")]
+    public float moveSpeed = 1f;
+    public float moveDistance = 0.5f;
+    private bool entryComplete = false;
+    private bool isSpecialMoving = false; // UltraAttackなどで移動中か
+    private Vector3 initialPosition;
 
     public GameObject missileTemplate;
     public Transform firePoint2;
@@ -32,31 +43,39 @@ public class Boss : Enemy
     public override void OnStart()
     {
         Fly();
-        StartCoroutine(Enter());
+        
     }
     
-    public void InitializeParts(List<BossPart> spawnedParts, Player player)
+    public void Initialize(BossData data, List<BossPart> spawnedParts, Player player)
     {
+        // 自身のデータを保持
+        _bossData = data;
+
+        // 自身のパラメータをデータから設定
+        this.hp = data.maxHp;
+        this.moveSpeed = data.moveSpeed;
+        this.moveDistance = data.moveDistance;
+        
+        // 部位とターゲットを設定
         this.target = player;
         this.parts = spawnedParts;
         initialPartsCount = parts.Count;
         
-        // ログを追加して、初期状態を明確にする
-        Debug.Log("Boss initialized with " + initialPartsCount + " parts.");
-        
+        Debug.Log("Boss initialized with HP: " + this.MaxHP);
         UpdatePhase();
 
-        // 各部位のOnDeathAsObservableをUniRxで購読する
+        // 部位のイベント購読
         foreach (var part in parts)
         {
             if (part != null)
             {
                 part.SetTarget(player);
-                part.OnDeathAsObservable
-                    .Subscribe(OnPartDestroyed)
-                    .AddTo(this.disposables); // 親クラスのdisposablesを利用
+                part.OnDeathAsObservable.Subscribe(OnPartDestroyed).AddTo(this.disposables);
             }
         }
+        
+        // 入場シーケンスを開始
+        EnterAsync(data.entryTargetPosition, data.parts.Select(p => p.entryTargetPosition).ToList()).Forget();
     }
 
     private void OnPartDestroyed(Unit sender)
@@ -103,37 +122,87 @@ public class Boss : Enemy
         }
     }
 
-    IEnumerator Enter()
+    async UniTaskVoid EnterAsync(Vector3 bodyTargetPos, List<Vector3> partTargetPositions)
     {
-        transform.position = new Vector3(15, 1.4f, 0);
-        yield return MoveTo(new Vector3(5, 1.4f, 0));
-        yield return Attack();
+        var token = this.GetCancellationTokenOnDestroy();
+        
+        // ボス本体と全部位の移動タスクをリスト化
+        List<UniTask> moveTasks = new List<UniTask>();
+
+        // ボス本体の移動タスクを追加
+        moveTasks.Add(MoveToAsync(bodyTargetPos, speed, token));
+
+        // 各部位の移動タスクを追加
+        for (int i = 0; i < parts.Count; i++)
+        {
+            if (parts[i] != null)
+            {
+                moveTasks.Add(parts[i].MoveToAsync(partTargetPositions[i], speed, token));
+            }
+        }
+
+        // 全ての移動タスクが完了するまで待機
+        await UniTask.WhenAll(moveTasks);
+        
+        // 移動完了後に初期座標を確定
+        this.initialPosition = transform.position;
+        foreach (var part in parts)
+        {
+            if (part != null)
+            {
+                part.SetInitialPosition();
+            }
+        }
+        
+        entryComplete = true;
+        AttackAsync().Forget(); // 攻撃開始
     }
 
-    new IEnumerator Attack()
+    async UniTaskVoid AttackAsync()
     {
-        while (true)
+        var token = this.GetCancellationTokenOnDestroy();
+        while (!death && this.gameObject.activeSelf)
         {
-            
-            switch (currentPhase)
-            {
-                case BossPhase.Normal:
-                    Fire();
+            PhaseData currentPhaseData = _bossData.phases.FirstOrDefault(p => p.phaseName == currentPhase.ToString());
 
-                    break;
-                case BossPhase.Angry:
-                    Fire2();
-                    break;
-                case BossPhase.Serious:
-                    fireTimer3 += Time.deltaTime;
-                    if (fireTimer3 >= UltCD)
-                    {
-                        yield return UltraAttack();
-                        fireTimer3 = 0;
-                    }
-                    break;
+            if (currentPhaseData != null)
+            {
+                // 行動シーケンスを順番に実行
+                foreach (var command in currentPhaseData.attackSequence)
+                {
+                    if (death) break;
+                    await ExecuteCommand(command, token);
+                }
             }
-            yield return null;
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        }
+    }
+    
+    private async UniTask ExecuteCommand(AttackCommand command, CancellationToken token)
+    {
+        switch (command.commandType)
+        {
+            case "WAIT":
+                await UniTask.Delay(System.TimeSpan.FromSeconds(command.duration), cancellationToken: token);
+                break;
+            case "SHOOT_RADIAL":
+                // データを元に放射状弾のパラメータを一時的に上書き
+                this.radialShotCount = command.count;
+                this.radialShotSpreadAngle = command.spreadAngle;
+                Fire(); // 1回だけ発射
+                break;
+            case "SHOOT_TARGET":
+                // データを元に連射
+                for (int i = 0; i < command.count; i++)
+                {
+                    if (death) break;
+                    Fire2();
+                    await UniTask.Delay(System.TimeSpan.FromSeconds(command.interval), cancellationToken: token);
+                }
+                break;
+            case "ULTRA_ATTACK":
+                await UltraAttackAsync(token);
+                break;
         }
     }
 
@@ -164,28 +233,30 @@ public class Boss : Enemy
         }
     }
 
-    IEnumerator UltraAttack()
+    async UniTask UltraAttackAsync(CancellationToken token)
     {
-        yield return MoveTo(new Vector3(5, 4, 0));
-        yield return FireMissile();
-        yield return MoveTo(new Vector3(5, 0, 0));
+        isSpecialMoving = true;
+        await MoveToAsync(new Vector3(5, 4, 0), speed, token);
+        await FireMissileAsync(token);
+        await MoveToAsync(new Vector3(5, 0, 0), speed, token);
+        this.initialPosition = transform.position;
+        isSpecialMoving = false;
     }
 
-    IEnumerator MoveTo(Vector3 pos)
+    async UniTask MoveToAsync(Vector3 pos, float moveSpeed, CancellationToken token)
     {
-        while (true)
+        while (Vector3.Distance(transform.position, pos) > 0.1f)
         {
-            Vector3 dir = (pos - transform.position);
-            if (dir.magnitude < 0.1) break;
-            transform.position += dir.normalized * speed * Time.deltaTime;
-            yield return null;
+            transform.position = Vector3.MoveTowards(transform.position, pos, moveSpeed * Time.deltaTime);
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
         }
+        transform.position = pos;
     }
 
-    IEnumerator FireMissile()
+    async UniTask FireMissileAsync(CancellationToken token)
     {
         ani.SetTrigger("Skill");
-        yield return new WaitForSeconds(3f);
+        await UniTask.Delay(System.TimeSpan.FromSeconds(3), cancellationToken: token);
     }
 
     public void Fire2()
@@ -220,6 +291,12 @@ public class Boss : Enemy
         {
             Vector3 dir = (target.transform.position - battery.position).normalized;
             battery.transform.rotation = Quaternion.FromToRotation(Vector3.left, dir);
+        }
+
+        if (entryComplete && !isSpecialMoving)
+        {
+            float yOffset = Mathf.Sin(Time.time * moveSpeed) * moveDistance;
+            transform.position = initialPosition + new Vector3(0, yOffset, 0);
         }
     }
 

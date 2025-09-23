@@ -992,14 +992,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   side: 2
-  life: 3
+  life: 1
   rigidbodyBird: {fileID: 3576320898584160610}
   ani: {fileID: 8996216226325494212}
   speed: 2
   fireRate: 1
   bulletTemplate: {fileID: 3522430151264285694, guid: 530da914a9fd5ff46bd30ba64566fbb8, type: 3}
   firePoint: {fileID: 7594119102621828431}
-  hp: 150
   MaxHP: 150
   Attack: 0
   destroyOnDeath: 0
@@ -1009,6 +1008,8 @@ MonoBehaviour:
   parts:
   - {fileID: 0}
   - {fileID: 0}
+  bossMoveSpeed: 1
+  bossMoveDistance: 0.5
   missileTemplate: {fileID: 206091966701159305, guid: 493c45282a4677d46a01f15f946d11ac, type: 3}
   firePoint2: {fileID: 1577786802272598356}
   firePoint3: {fileID: 5580941030072816870}
