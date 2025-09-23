@@ -39,7 +39,7 @@ public class Level : MonoBehaviour
         if (Boss != null)
         {
             boss = (Boss)UnitManager.Instance.GenerateEnemy(Boss.gameObject);
-            boss.target = GameManager.Instance.player;
+            boss.target = GameManager.Instance().player;
 
             // --- ▼▼▼ 修正 ▼▼▼ ---
             // OnDeathイベントをUniRxで購読する

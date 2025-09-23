@@ -2,8 +2,9 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Common;
 
-public class BulletManager : MonoSingleton<BulletManager>
+public class BulletManager : SingletonMonoBehaviourBase<BulletManager>
 {
     private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
     public List<Bullet> ActiveEnemyBullets { get; private set; } = new List<Bullet>();

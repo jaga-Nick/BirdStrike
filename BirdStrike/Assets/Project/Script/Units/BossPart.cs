@@ -56,14 +56,13 @@ public class BossPart : Unit
     {
         this.target = target;
     }
-
-    // --- ▼▼▼ 修正 ▼▼▼ ---
+    
     public override void Fire()
     {
         if (target == null) return;
         if (fireTime > 1f / fireRate)
         {
-            GameObject go = BulletManager.Instance.GetBullet(this.bulletName);
+            GameObject go = BulletManager.Instance().GetBullet(this.bulletName);
             if(go == null) return;
 
             var bulletData = DataManager.Instance.GetBulletData(this.bulletName);
@@ -77,7 +76,6 @@ public class BossPart : Unit
             fireTime = 0f;
         }
     }
-    // --- ▲▲▲ 修正 ▲▲▲ ---
     
     private void OnTriggerEnter2D(Collider2D col)
     {

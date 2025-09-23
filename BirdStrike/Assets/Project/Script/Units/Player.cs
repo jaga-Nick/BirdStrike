@@ -91,7 +91,7 @@ public class Player : Unit
         _bombCount.Value--;
         Debug.Log("BOMB! Remaining: " + _bombCount.Value);
 
-        var activeBullets = new List<Bullet>(BulletManager.Instance.ActiveEnemyBullets);
+        var activeBullets = new List<Bullet>(BulletManager.Instance().ActiveEnemyBullets);
         int scoreGained = 0;
 
         foreach (var bullet in activeBullets)
@@ -101,7 +101,7 @@ public class Player : Unit
                 scoreGained += bullet.scoreValue;
                 // --- ▼▼▼ エラー修正1 ▼▼▼ ---
                 // ReturnBulletの引数を(GameObject, string, SIDE)に合わせる
-                BulletManager.Instance.ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
+                BulletManager.Instance().ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
                 // --- ▲▲▲ エラー修正1 ▲▲▲ ---
             }
         }
@@ -115,7 +115,7 @@ public class Player : Unit
         
         if (scoreGained > 0)
         {
-            GameManager.Instance.AddScore(scoreGained);
+            GameManager.Instance().AddScore(scoreGained);
         }
     }
 

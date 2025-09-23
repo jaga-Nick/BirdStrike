@@ -4,11 +4,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using Common;
 
-public class GameManager : MonoSingleton<GameManager>
+public class GameManager : SingletonMonoBehaviourBase<GameManager>
 {
-    
-    public int Score { get; private set; } = 0;
     public GAME_STATUS status;
     public GAME_STATUS Status
     {
@@ -19,30 +18,33 @@ public class GameManager : MonoSingleton<GameManager>
             if (UIManager.Instance != null) UIManager.Instance.UpdateUI();
         }
     }
-
+    [HideInInspector] public int Score { get; private set; } = 0;
     [HideInInspector] public Player player;
+    
+    public string titleSceneKey = "Title";
+    public string inGameSceneKey = "InGame";
+    public string resultSceneKey = "Result";
+
+    private bool _isInitialized = false;
 
     void Start()
     {
         Status = GAME_STATUS.READY;
         Score = 0;
-    }
-
-    private void Player_OnDeath(Unit sender)
-    {
-        if (player.life <= 0)
-        {
-            Status = GAME_STATUS.OVER;
-            UIManager.Instance.UILeveLose();
-            if (UnitManager.Instance != null) UnitManager.Instance.Clear();
-        }
-        else
-        {
-            player.Rebirth();
-        }
+        _isInitialized = true;
     }
     
+    
     public async void StartGame()
+    {
+        // InGameシーンに遷移
+        await SceneLoader.Instance().LoadSceneAsync(inGameSceneKey);
+
+        // シーン遷移後にゲームオブジェクトの生成を開始
+        InitializeInGameObjects().Forget();
+    }
+    
+    private async UniTaskVoid InitializeInGameObjects()
     {
         Debug.Log("Loading game data...");
         await DataManager.Instance.LoadDataAsync();
@@ -53,11 +55,7 @@ public class GameManager : MonoSingleton<GameManager>
             return;
         }
         
-        // --- ▼▼▼ 修正 ▼▼▼ ---
-        // BulletManagerにプールの初期化を指示
-        await BulletManager.Instance.InitializePoolsAsync();
-        // --- ▲▲▲ 修正 ▲▲▲ ---
-
+        await BulletManager.Instance().InitializePoolsAsync();
         Status = GAME_STATUS.INGAME;
         var token = this.GetCancellationTokenOnDestroy();
         
@@ -71,7 +69,7 @@ public class GameManager : MonoSingleton<GameManager>
         player.Initialize(playerData);
         player.Fly();
 
-        // Boss Parts Spawn
+        // Boss & Parts Spawn
         var partSpawnTasks = new List<UniTask<GameObject>>();
         foreach (var partData in bossData.parts)
         {
@@ -86,11 +84,11 @@ public class GameManager : MonoSingleton<GameManager>
             spawnedParts.Add(part);
         }
 
-        // Boss Body Spawn
         GameObject bossGO = await Addressables.InstantiateAsync(bossData.addressableKey, bossData.initialPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
         Boss boss = bossGO.GetComponent<Boss>();
+        
+        boss.OnDeathAsObservable.Subscribe(_ => OnBossDefeated()).AddTo(boss);
 
-        // Boss Initialization
         boss.Initialize(bossData, spawnedParts, this.player);
 
         Debug.Log("5. Initialization complete. Game Start!");
@@ -102,10 +100,40 @@ public class GameManager : MonoSingleton<GameManager>
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     
+    public void ReturnToTitle()
+    {
+        Status = GAME_STATUS.READY;
+        Score = 0;
+        // playerはシーン遷移で破棄される
+        this.player = null;
+        SceneLoader.Instance().LoadSceneAsync(titleSceneKey).Forget();
+    }
+    
     public void AddScore(int amount)
     {
         Score += amount;
         Debug.Log("Score: " + Score);
         // TODO: ここでUIManagerを呼び出してスコア表示を更新する
+    }
+    
+    private void Player_OnDeath(Unit sender)
+    {
+        if (player.life <= 0)
+        {
+            Status = GAME_STATUS.OVER;
+            UIManager.Instance.UILeveLose();
+            if (UnitManager.Instance != null) UnitManager.Instance.Clear();
+        }
+        else
+        {
+            player.Rebirth();
+        }
+    }
+    
+    private void OnBossDefeated()
+    {
+        Status = GAME_STATUS.OVER;
+        // UIManager.Instance.UILeveClear(); // ResultシーンのUIで管理
+        SceneLoader.Instance().LoadSceneAsync(resultSceneKey).Forget();
     }
 }

@@ -22,13 +22,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 11bffeab05ff16b4e9bdd8bf2131b34a
-    m_Address: GameClear
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3e8954f09335a5a49a3346ba457d684f
-    m_Address: GameOver
+  - m_GUID: 06d808102aad5c449a3da9e7d8c1aa91
+    m_Address: Result
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

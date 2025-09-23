@@ -51,15 +51,15 @@ public class UIManager : MonoSingleton<UIManager>
     {
         
         // playerが生成済みの場合のみ残機表示を更新する
-        if (GameManager.Instance.player != null)
-            uiLife.text = GameManager.Instance.player.life.ToString();
+        if (GameManager.Instance().player != null)
+            uiLife.text = GameManager.Instance().player.life.ToString();
     }
 
     public void UpdateUI()
     {
-        this.uiReady.SetActive(GameManager.Instance.Status == GAME_STATUS.READY);
-        this.uiIngame.SetActive(GameManager.Instance.Status == GAME_STATUS.INGAME);
-        this.uiGameOver.SetActive(GameManager.Instance.Status == GAME_STATUS.OVER);
+        this.uiReady.SetActive(GameManager.Instance().Status == GAME_STATUS.READY);
+        this.uiIngame.SetActive(GameManager.Instance().Status == GAME_STATUS.INGAME);
+        this.uiGameOver.SetActive(GameManager.Instance().Status == GAME_STATUS.OVER);
         
     }
 }
