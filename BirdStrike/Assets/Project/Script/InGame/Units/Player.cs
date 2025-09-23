@@ -141,13 +141,7 @@ public class Player : Unit
     {
         if(death || Isinvincible)
             return;
-
-        Item item = col.gameObject.GetComponent<Item>();
-        if(item != null)
-        {
-            item.Use(this);
-            return;
-        }
+        
 
         Bullet bullet = col.gameObject.GetComponent<Bullet>();
         BossPart part = col.gameObject.GetComponent<BossPart>();
