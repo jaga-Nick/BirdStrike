@@ -1,65 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoSingleton<UIManager>
 {
+    [Header("UI Panels")]
     public GameObject uiReady;
     public GameObject uiIngame;
-    public GameObject uiGameOver;
 
-    //public Slider hpbar;
-    public Text uiLife;
-    //public Text uiLevelName;
-    public Text uiLevelStartName;
-    public Text uiLevelEndText;
+    [Header("In-Game UI Elements")]
+    public Text lifeCount;
+    public Text scoreCount;
+    public Image bossHpBar;
 
-    public GameObject uiLevelStart;
-    public GameObject uiLevelEnd;
+    private Boss _boss; // InGameシーンのボスを保持する
 
-
-    // Start is called before the first frame update
     void Start()
     {
-        this.uiReady.SetActive(true);
-    }
-
-    public void UpdateLife(int score)
-    {
-        uiLife.text = score.ToString();
-    }
-
-    public void ShowLevelStart(string name)
-    {
-        uiLevelStartName.text = name;
-        
-        uiLevelStart.SetActive(true);
-    }
-
-    public void UILeveLose()
-    {
-        uiLevelEndText.text = "YOU LOSE";
-    }
-
-    public void UILeveClear()
-    {
-        uiLevelEndText.text = "YOU WIN";
+        UpdateUI();
     }
     
     void Update()
     {
+        // ゲーム中でなければUI更新はしない
+        if (GameManager.Instance().Status != GAME_STATUS.INGAME)
+        {
+            if(uiIngame.activeSelf) uiIngame.SetActive(false);
+            return;
+        }
+
+        // ゲーム中になったら一度だけインゲームUIを有効化
+        if(!uiIngame.activeSelf) uiIngame.SetActive(true);
         
-        // playerが生成済みの場合のみ残機表示を更新する
+
+        // 残機表示
         if (GameManager.Instance().player != null)
-            uiLife.text = GameManager.Instance().player.life.ToString();
+        {
+            lifeCount.text = GameManager.Instance().player.life.ToString();
+        }
+
+        // スコア表示
+        scoreCount.text = GameManager.Instance().Score.ToString("D6");
+
+        // ボスHPバー表示
+        if (_boss == null)
+        {
+            // シーンからボスを探してきて保持する
+            _boss = FindObjectOfType<Boss>();
+            if (_boss != null)
+            {
+                bossHpBar.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            // ボスが見つかっていればHPを更新
+            bossHpBar.fillAmount = _boss.hp / _boss.MaxHP;
+        }
     }
 
     public void UpdateUI()
     {
-        this.uiReady.SetActive(GameManager.Instance().Status == GAME_STATUS.READY);
-        this.uiIngame.SetActive(GameManager.Instance().Status == GAME_STATUS.INGAME);
-        this.uiGameOver.SetActive(GameManager.Instance().Status == GAME_STATUS.OVER);
-        
+        uiReady.SetActive(GameManager.Instance().Status == GAME_STATUS.READY);
+        // インゲームUIの表示はUpdateに任せる
+        // uiIngame.SetActive(GameManager.Instance().Status == GAME_STATUS.INGAME);
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine.AddressableAssets;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using Common;
+using System.Linq;
 
 public class GameManager : SingletonMonoBehaviourBase<GameManager>
 {
@@ -18,58 +19,58 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
             if (UIManager.Instance != null) UIManager.Instance.UpdateUI();
         }
     }
-    [HideInInspector] public int Score { get; private set; } = 0;
+
+    // --- ▼▼▼ シンプルな変数に戻す ▼▼▼ ---
+    public int Score { get; private set; } = 0;
+    // --- ▲▲▲ シンプルな変数に戻す ▲▲▲ ---
+
     [HideInInspector] public Player player;
     
+    [Header("Scene Addressable Keys")]
     public string titleSceneKey = "Title";
     public string inGameSceneKey = "InGame";
     public string resultSceneKey = "Result";
 
-    private bool _isInitialized = false;
+    public bool IsGameWon { get; private set; } = false;
 
     void Start()
     {
+        if (Instance() != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
         Status = GAME_STATUS.READY;
         Score = 0;
-        _isInitialized = true;
     }
-    
     
     public async void StartGame()
     {
-        // InGameシーンに遷移
         await SceneLoader.Instance().LoadSceneAsync(inGameSceneKey);
-
-        // シーン遷移後にゲームオブジェクトの生成を開始
         InitializeInGameObjects().Forget();
     }
     
     private async UniTaskVoid InitializeInGameObjects()
     {
-        Debug.Log("Loading game data...");
         await DataManager.Instance.LoadDataAsync();
-
-        if (!DataManager.Instance.IsDataLoaded)
-        {
-            Debug.LogError("Game start aborted due to data loading failure.");
-            return;
-        }
-        
+        if (!DataManager.Instance.IsDataLoaded) return;
         await BulletManager.Instance().InitializePoolsAsync();
+        
         Status = GAME_STATUS.INGAME;
         var token = this.GetCancellationTokenOnDestroy();
         
         var playerData = DataManager.Instance.Player;
         var bossData = DataManager.Instance.Boss;
 
-        // Player Spawn
+        // Player & Boss & Parts Spawn
         GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, Vector3.zero, Quaternion.identity).ToUniTask(cancellationToken: token);
         this.player = playerGO.GetComponent<Player>();
         this.player.OnDeathAsObservable.Subscribe(Player_OnDeath).AddTo(this.player);
         player.Initialize(playerData);
         player.Fly();
-
-        // Boss & Parts Spawn
+        
         var partSpawnTasks = new List<UniTask<GameObject>>();
         foreach (var partData in bossData.parts)
         {
@@ -83,46 +84,25 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
             part.Initialize(bossData.parts[i]);
             spawnedParts.Add(part);
         }
-
         GameObject bossGO = await Addressables.InstantiateAsync(bossData.addressableKey, bossData.initialPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
         Boss boss = bossGO.GetComponent<Boss>();
         
         boss.OnDeathAsObservable.Subscribe(_ => OnBossDefeated()).AddTo(boss);
-
         boss.Initialize(bossData, spawnedParts, this.player);
-
-        Debug.Log("5. Initialization complete. Game Start!");
     }
 
-    public void Restart()
-    {
-        Status = GAME_STATUS.READY;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-    
-    public void ReturnToTitle()
-    {
-        Status = GAME_STATUS.READY;
-        Score = 0;
-        // playerはシーン遷移で破棄される
-        this.player = null;
-        SceneLoader.Instance().LoadSceneAsync(titleSceneKey).Forget();
-    }
-    
     public void AddScore(int amount)
     {
         Score += amount;
-        Debug.Log("Score: " + Score);
-        // TODO: ここでUIManagerを呼び出してスコア表示を更新する
     }
-    
+
     private void Player_OnDeath(Unit sender)
     {
         if (player.life <= 0)
         {
+            IsGameWon = false;
             Status = GAME_STATUS.OVER;
-            UIManager.Instance.UILeveLose();
-            if (UnitManager.Instance != null) UnitManager.Instance.Clear();
+            SceneLoader.Instance().LoadSceneAsync(resultSceneKey).Forget();
         }
         else
         {
@@ -132,8 +112,16 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
     
     private void OnBossDefeated()
     {
+        IsGameWon = true;
         Status = GAME_STATUS.OVER;
-        // UIManager.Instance.UILeveClear(); // ResultシーンのUIで管理
         SceneLoader.Instance().LoadSceneAsync(resultSceneKey).Forget();
+    }
+    
+    public void ReturnToTitle()
+    {
+        Status = GAME_STATUS.READY;
+        Score = 0;
+        this.player = null;
+        SceneLoader.Instance().LoadSceneAsync(titleSceneKey).Forget();
     }
 }

@@ -163,6 +163,7 @@ public class Player : Unit
         if (death || Isinvincible)
             return;
 
+        
         if (col.gameObject.name.Equals("ScoreArea"))
         {
             if(OnScore != null)
@@ -170,5 +171,6 @@ public class Player : Unit
                 OnScore(1);
             }
         }
+        
     }
 }

@@ -9,6 +9,7 @@ public class TitleManager : MonoBehaviour
 {
     
     private InputSystem_Actions _actionMap;
+    private bool isOnce = false;
 
     private void Awake()
     {
@@ -17,16 +18,26 @@ public class TitleManager : MonoBehaviour
         manager.UIEnable();
     }
 
+    private void Start()
+    {
+        isOnce = false;
+    }
+
     private void Update()
     {
-        if (_actionMap.UI.Submit.IsPressed())
+        if (_actionMap.UI.Submit.IsPressed() && !isOnce)
         {
+            isOnce = true;
             GameManager.Instance().StartGame();
         }
         
         if (_actionMap.UI.Cancel.IsPressed())
         {
-            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+            #else
+                Application.Quit();//ゲームプレイ終了
+            #endif
         }
     }
 }

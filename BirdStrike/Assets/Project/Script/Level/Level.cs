@@ -34,7 +34,7 @@ public class Level : MonoBehaviour
 
     void Start()
     {
-        UIManager.Instance.ShowLevelStart(string.Format("LEVEL {0} {1}", this.LevelID, this.LevelName));
+        //UIManager.Instance.ShowLevelStart(string.Format("LEVEL {0} {1}", this.LevelID, this.LevelName));
         
         if (Boss != null)
         {

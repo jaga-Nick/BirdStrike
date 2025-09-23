@@ -51,6 +51,7 @@ public class Enemy : Unit
 
     private void OnTriggerExit2D(Collider2D col)
     {
+        
         if (col.gameObject.name.Equals("ScoreArea"))
         {
             if (OnScore != null)
@@ -58,5 +59,6 @@ public class Enemy : Unit
                 OnScore(1);
             }
         }
+        
     }
 }

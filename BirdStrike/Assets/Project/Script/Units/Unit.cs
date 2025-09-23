@@ -28,7 +28,7 @@ public class Unit : MonoBehaviour, IDisposable
     protected Vector3 initPos;
     protected bool isFlying = false;
 
-    protected float hp;
+    public float hp;
     public float MaxHP = 10f;
     public float HP => this.hp;
 
