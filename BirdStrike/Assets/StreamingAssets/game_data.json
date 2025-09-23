@@ -14,7 +14,7 @@
       "speed": 5.0,
       "power": 1,
       "durability": 1,
-      "scoreValue": 10
+      "scoreValue": 100
     },
     {
       "bulletName": "missile",
@@ -22,7 +22,7 @@
       "speed": 2.0,
       "power": 2,
       "durability": 10,
-      "scoreValue": 100,
+      "scoreValue": 1000,
       "homingDuration": 30.0,
       "maxTurnSpeed": 30.0
     }

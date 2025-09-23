@@ -39,6 +39,8 @@ public class Boss : Enemy
     [Header("Radial Shot Settings")]
     public int radialShotCount = 5;
     public float radialShotSpreadAngle = 90f;
+    
+    private BulletData _nextMissileData;
 
     public override void OnStart()
     {
@@ -232,6 +234,7 @@ public class Boss : Enemy
     {
         isSpecialMoving = true;
         await MoveToAsync(new Vector3(5, 4, 0), speed, token);
+        _nextMissileData = DataManager.Instance.GetBulletData(command.bulletName);
         await FireMissileAsync(token);
         await MoveToAsync(new Vector3(5, 0, 0), speed, token);
         this.initialPosition = transform.position;
@@ -273,6 +276,7 @@ public class Boss : Enemy
     {
         GameObject go = Instantiate(missileTemplate, firePoint3);
         missile = go.GetComponent<Missile>();
+        missile.Initialize(_nextMissileData, this.side);
         missile.target = target.transform;
     }
 
