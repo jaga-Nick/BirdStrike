@@ -41,7 +41,6 @@ public class Unit : MonoBehaviour, IDisposable
     
     void Awake()
     {
-        hp = MaxHP;
         ani = GetComponent<Animator>();
         initPos = transform.position;
     }

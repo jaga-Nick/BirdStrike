@@ -49,7 +49,9 @@ MonoBehaviour:
   bgmSource: {fileID: -1578865168085917310}
   seSource: {fileID: -3428339066090938980}
   bgmList: []
-  seList: []
+  seList:
+  - name: Fire
+    clip: {fileID: 8300000, guid: 3348dda0dec375845ac43663f518344e, type: 3}
 --- !u!82 &-1578865168085917310
 AudioSource:
   m_ObjectHideFlags: 0

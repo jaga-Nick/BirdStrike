@@ -41,18 +41,20 @@ public class BulletManager : SingletonMonoBehaviourBase<BulletManager>
             }
         }
     }
-
-    // 同期的にプールから弾を取得する
+    
+    /// <summary>
+    /// 同期的にプールから弾を取得する
+    /// </summary>
     public GameObject GetBullet(string bulletName)
     {
         if (!_pools.ContainsKey(bulletName) || _pools[bulletName].Count == 0)
         {
             Debug.LogWarning($"Pool for {bulletName} is empty. Consider increasing pool size.");
-            // ここで新しくInstantiateするなどのフォールバック処理も可能
             return null;
         }
 
         var bulletGO = _pools[bulletName].Dequeue();
+        //AudioManager.Instance().PlaySe("Fire");
         bulletGO.SetActive(true);
         
         var bulletComp = bulletGO.GetComponent<Bullet>();

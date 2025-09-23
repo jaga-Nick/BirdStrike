@@ -12,25 +12,35 @@ public class UIManager : MonoSingleton<UIManager>
     public Text scoreCount;
     public Image bossHpBar;
 
-    private Boss _boss; // InGameシーンのボスを保持する
+    private Boss _boss; // 監視対象のボス
 
     void Start()
     {
         UpdateUI();
+        // ゲーム開始時はHPバーを非表示にしておく
+        if (bossHpBar != null) bossHpBar.gameObject.SetActive(false);
     }
     
+    /// <summary>
+    /// GameManagerから呼び出され、UIの監視対象を設定する
+    /// </summary>
+    public void InitializeInGameUI(Boss boss)
+    {
+        _boss = boss;
+        if (_boss != null && bossHpBar != null)
+        {
+            bossHpBar.gameObject.SetActive(true);
+        }
+    }
+
     void Update()
     {
-        // ゲーム中でなければUI更新はしない
         if (GameManager.Instance().Status != GAME_STATUS.INGAME)
         {
             if(uiIngame.activeSelf) uiIngame.SetActive(false);
             return;
         }
-
-        // ゲーム中になったら一度だけインゲームUIを有効化
         if(!uiIngame.activeSelf) uiIngame.SetActive(true);
-        
 
         // 残機表示
         if (GameManager.Instance().player != null)
@@ -42,18 +52,9 @@ public class UIManager : MonoSingleton<UIManager>
         scoreCount.text = GameManager.Instance().Score.ToString("D6");
 
         // ボスHPバー表示
-        if (_boss == null)
+        if (_boss != null)
         {
-            // シーンからボスを探してきて保持する
-            _boss = FindObjectOfType<Boss>();
-            if (_boss != null)
-            {
-                bossHpBar.gameObject.SetActive(true);
-            }
-        }
-        else
-        {
-            // ボスが見つかっていればHPを更新
+            // ボスのHPを更新
             bossHpBar.fillAmount = _boss.hp / _boss.MaxHP;
         }
     }
@@ -61,7 +62,5 @@ public class UIManager : MonoSingleton<UIManager>
     public void UpdateUI()
     {
         uiReady.SetActive(GameManager.Instance().Status == GAME_STATUS.READY);
-        // インゲームUIの表示はUpdateに任せる
-        // uiIngame.SetActive(GameManager.Instance().Status == GAME_STATUS.INGAME);
     }
 }

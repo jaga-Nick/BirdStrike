@@ -54,6 +54,7 @@ public class Boss : Enemy
         _bossData = data;
 
         // 自身のパラメータをデータから設定
+        this.MaxHP = data.maxHp;
         this.hp = data.maxHp;
         this.moveSpeed = data.moveSpeed;
         this.moveDistance = data.moveDistance;

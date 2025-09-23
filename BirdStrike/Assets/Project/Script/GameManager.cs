@@ -63,8 +63,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         
         var playerData = DataManager.Instance.Player;
         var bossData = DataManager.Instance.Boss;
-
-        // Player & Boss & Parts Spawn
+        
         GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, playerData.spawnPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
         this.player = playerGO.GetComponent<Player>();
         this.player.OnDeathAsObservable.Subscribe(Player_OnDeath).AddTo(this.player);
@@ -89,6 +88,8 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         
         boss.OnDeathAsObservable.Subscribe(_ => OnBossDefeated()).AddTo(boss);
         boss.Initialize(bossData, spawnedParts, this.player);
+        
+        UIManager.Instance.InitializeInGameUI(boss);
     }
 
     public void AddScore(int amount)
