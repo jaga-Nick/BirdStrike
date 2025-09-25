@@ -2,6 +2,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using InGame.Presenter;
+using Common;
 
 /// <summary>
 /// 弾のクラス
@@ -100,8 +101,20 @@ public class Bullet : MonoBehaviour
         Bullet otherBullet = col.gameObject.GetComponent<Bullet>();
         if (otherBullet != null)
         {
+            Missile missile = otherBullet.GetComponent<Missile>();
             if (this.side != otherBullet.side && this.side != SIDE.NONE && otherBullet.side != SIDE.NONE)
             {
+                // 自分がプレイヤーの弾で、相手が敵の弾の場合
+                if (this.side == SIDE.PLAYER && otherBullet.side == SIDE.ENEMY)
+                {
+                    // 相手の弾がこの衝突で破壊されるか確認
+                    if (otherBullet.durability <= 1)
+                    {
+                        // 破壊される相手の弾のスコアを加算
+                        GameManager.Instance().AddScore(otherBullet.scoreValue);
+                    }
+                }
+                
                 this.TakeDamage(1);
                 otherBullet.TakeDamage(1);
             }
