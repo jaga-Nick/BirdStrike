@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using InGame.Presenter;
 using UnityEngine;
 
 public class Missile : Bullet
@@ -83,11 +84,6 @@ public class Missile : Bullet
         // 衝突相手がプレイヤーだった場合
         if (col.CompareTag("Player"))
         {
-            Player p = col.GetComponent<Player>();
-            if (p != null)
-            {
-                p.Damage(power);
-            }
             Explod(); // 爆発して消滅
         }
     }

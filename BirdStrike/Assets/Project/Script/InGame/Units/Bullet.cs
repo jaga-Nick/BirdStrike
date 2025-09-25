@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using InGame.Presenter;
 
 public class Bullet : MonoBehaviour
 {
@@ -94,7 +95,7 @@ public class Bullet : MonoBehaviour
         if (this.side == SIDE.PLAYER)
         {
             // 衝突相手がEnemyタグを持っているか、BossPartコンポーネントを持っているか
-            if (col.CompareTag("Enemy") || col.GetComponent<BossPart>() != null)
+            if (col.CompareTag("Enemy") || col.GetComponent<BossPresenter>() != null || col.GetComponent<BossPartPresenter>() != null)
             {
                 // 自分自身（弾）をプールに戻す
                 BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);

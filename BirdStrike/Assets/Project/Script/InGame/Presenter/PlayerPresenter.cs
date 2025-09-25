@@ -188,8 +188,8 @@ namespace InGame.Presenter
             if (_isDead || _invincibleTimer > 0) return;
 
             // 敵または敵弾に接触した場合
-            bool isHitByEnemy = other.GetComponent<Boss>() != null || 
-                                other.GetComponent<BossPart>() != null;
+            bool isHitByEnemy = other.GetComponent<BossPresenter>() != null || 
+                                other.GetComponent<BossPartPresenter>() != null;
             var bullet = other.GetComponent<Bullet>();
             bool isHitByEnemyBullet = bullet != null && bullet.side == SIDE.ENEMY;
 
