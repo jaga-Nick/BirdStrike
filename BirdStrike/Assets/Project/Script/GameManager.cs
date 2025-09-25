@@ -6,6 +6,9 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using Common;
 using System.Linq;
+using InGame.Presenter;
+using InGame.Model;
+using InGame.View;
 
 public class GameManager : SingletonMonoBehaviourBase<GameManager>
 {
@@ -24,7 +27,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
     public int Score { get; private set; } = 0;
     // --- ▲▲▲ シンプルな変数に戻す ▲▲▲ ---
 
-    [HideInInspector] public Player player;
+    [HideInInspector] public PlayerPresenter player;
     
     [Header("Scene Addressable Keys")]
     public string titleSceneKey = "Title";
@@ -65,7 +68,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         var bossData = DataManager.Instance.Boss;
         
         GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, playerData.spawnPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
-        this.player = playerGO.GetComponent<Player>();
+        this.player = playerGO.GetComponent<PlayerPresenter>();
         this.player.OnDeathAsObservable.Subscribe(Player_OnDeath).AddTo(this.player);
         player.Initialize(playerData);
         player.Fly();
@@ -95,6 +98,23 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
     public void AddScore(int amount)
     {
         Score += amount;
+        GameEvents.OnScoreUpdated?.Invoke(Score);
+    }
+    
+    /// <summary>
+    /// プレイヤーが死亡した際に呼び出される
+    /// </summary>
+    public void OnPlayerDied()
+    {
+        // プレイヤーの復活処理はPlayerPresenter自身が行うため、ここではゲームオーバー判定のみ
+        // PlayerPresenterからモデルを取得して残機を確認
+        var playerModel = player.GetModel(); // PlayerPresenterにGetModel()を追加する必要があります
+        if (playerModel.life <= 0)
+        {
+            IsGameWon = false;
+            Status = GAME_STATUS.OVER;
+            SceneLoader.Instance().LoadSceneAsync(resultSceneKey).Forget();
+        }
     }
 
     private void Player_OnDeath(Unit sender)
