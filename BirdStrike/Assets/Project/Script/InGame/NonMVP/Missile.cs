@@ -40,26 +40,19 @@ public class Missile : Bullet
         Vector3 finalDirection;
         if (target != null && homingDuration > 0)
         {
+            // ターゲットの方向を向くための「理想の回転」を計算
+            Vector3 targetDirection = target.position - transform.position;
+            Quaternion targetRotation = Quaternion.FromToRotation(Vector3.left, targetDirection);
 
-            Vector3 currentDirection = transform.rotation * Vector3.left;
-
-
-            Vector3 targetDirection = (target.position - transform.position).normalized;
-
-
+            // 1フレームあたりに回転できる最大角度を計算
             float maxAngleDelta = maxTurnSpeed * Time.deltaTime;
 
+            // 現在の回転から、理想の回転へ、最大角度の範囲で滑らかに回転
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngleDelta);
+        }
 
-            finalDirection = Vector3.RotateTowards(currentDirection, targetDirection, Mathf.Deg2Rad * maxAngleDelta, 0.0f);
-        }
-        else
-        {
-            // 誘導が切れたら、現在の向きのまま直進
-            finalDirection = transform.rotation * Vector3.left;
-        }
-        
-        transform.rotation = Quaternion.FromToRotation(Vector3.left, finalDirection);
-        transform.position += finalDirection * speed * Time.deltaTime;
+        // 常に、現在のミサイルの正面（左向き）へ前進
+        transform.position += transform.rotation * Vector3.left * speed * Time.deltaTime;
     }
 
     public void Launch()
