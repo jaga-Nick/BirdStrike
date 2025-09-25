@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using InGame.Presenter;
 using UnityEngine;
 
+
+/// <summary>
+/// ミサイルの動きを管理するクラス
+/// </summary>
 public class Missile : Bullet
 {
     public Transform target;
@@ -12,9 +16,11 @@ public class Missile : Bullet
     private float homingDuration; // 誘導が有効な時間（秒）
     private float maxTurnSpeed;   // 1秒あたりの最大旋回角度（度）
 
+    /// <summary>
+    /// JSONから読み込んだデータで初期化する。
+    /// </summary>
     public void Initialize(BulletData data, SIDE ownerSide)
     {
-        // 親クラス（Element/Bullet）のパラメータを設定
         this.power = data.power;
         this.durability = data.durability;
         this.scoreValue = data.scoreValue;
@@ -27,10 +33,18 @@ public class Missile : Bullet
         this.maxTurnSpeed = data.maxTurnSpeed;
     }
 
-    public override void OnUpdate()
+    protected override void OnUpdate()
     {
         if (!running) { return; }
 
+        Homing();
+    }
+
+    /// <summary>
+    /// ミサイルの誘導
+    /// </summary>
+    private void Homing()
+    {
         if (homingDuration > 0)
         {
             homingDuration -= Time.deltaTime;
@@ -55,11 +69,17 @@ public class Missile : Bullet
         transform.position += transform.rotation * Vector3.left * speed * Time.deltaTime;
     }
 
+    /// <summary>
+    /// ミサイルアニメーション中
+    /// </summary>
     public void Launch()
     {
         running = true;
     }
 
+    /// <summary>
+    /// 爆発エフェクトを生成
+    /// </summary>
     public void Explod()
     {
         if (fxExpold != null)

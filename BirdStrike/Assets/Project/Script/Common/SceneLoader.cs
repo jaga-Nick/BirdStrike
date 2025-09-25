@@ -13,7 +13,6 @@ public class SceneLoader : GlobalMonoSingletonBase<SceneLoader>
     /// <summary>
     /// 指定されたシーンをAddressablesでロードする
     /// </summary>
-
     public async UniTask LoadSceneAsync(string sceneAddress, LoadSceneMode loadMode = LoadSceneMode.Single)
     {
         // 既にシーンがロードされている場合は、先にアンロードする

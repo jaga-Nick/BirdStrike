@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using InGame.Presenter;
+using Common;
 
 namespace InGame.Model
 {
     public enum BossPhase { Normal, Angry, Serious }
     
     /// <summary>
-    /// ボスのデータと状態を管理するピュアC#クラス。
+    /// ボスのデータと状態を管理するクラス。
     /// </summary>
     public class BossModel
     {
-        // --- Properties ---
         public float hp { get; private set; }
         public float maxHp { get; private set; }
         public float speed { get; private set; }
@@ -20,12 +20,14 @@ namespace InGame.Model
         public float moveDistance { get; private set; }
         public BossPhase currentPhase { get; private set; }
         public bool isInvincible { get; private set; } = true;
-
-        // --- Data ---
+        
         private readonly BossData _data;
         private readonly int _initialPartsCount;
         private readonly List<BossPartPresenter> _parts;
 
+        /// <summary>
+        /// JSONから読み込んだデータでモデルを初期化する。
+        /// </summary>
         public BossModel(BossData data, List<BossPartPresenter> parts)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 弾に関する設定データ
+/// </summary>
 [System.Serializable]
 public class BulletData
 {
@@ -15,6 +18,9 @@ public class BulletData
     public float maxTurnSpeed; //誘導最大角度
 }
 
+/// <summary>
+/// プレイヤーに関する設定データ
+/// </summary>
 [System.Serializable]
 public class PlayerData
 {
@@ -29,6 +35,9 @@ public class PlayerData
     public Vector3 spawnPosition;// スポーン位置
 }
 
+/// <summary>
+/// ボスの部位に関する設定データ
+/// </summary>
 [System.Serializable]
 public class BossPartData
 {
@@ -42,6 +51,9 @@ public class BossPartData
     public Vector3 entryTargetPosition;// 登場演出先の地点
 }
 
+/// <summary>
+/// ボスに関する設定データ
+/// </summary>
 [System.Serializable]
 public class BossData
 {
@@ -55,6 +67,9 @@ public class BossData
     public List<PhaseData> phases;
 }
 
+/// <summary>
+/// ボスのフェーズ（行動パターン）に関する設定データ
+/// </summary>
 [System.Serializable]
 public class PhaseData
 {
@@ -62,6 +77,9 @@ public class PhaseData
     public List<AttackCommand> attackSequence;
 }
 
+/// <summary>
+/// ボスの攻撃パターンに関する設定データ
+/// </summary>
 [System.Serializable]
 public class AttackCommand
 {

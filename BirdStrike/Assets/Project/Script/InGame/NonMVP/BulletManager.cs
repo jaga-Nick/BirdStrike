@@ -3,13 +3,21 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Common;
+using InGame.NonMVP;
 
+
+
+/// <summary>
+/// Bulletをオブジェクトプール管理するクラス
+/// </summary>
 public class BulletManager : LocalMonoSingletonBase<BulletManager>
 {
     private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
-    public List<Bullet> ActiveEnemyBullets { get; private set; } = new List<Bullet>();
+    public List<Bullet> ActiveEnemyBullets { get; private set; } = new List<Bullet>(); // 現在アクティブ中の敵の弾リスト
 
-    // プールを非同期で初期化する
+    /// <summary>
+    /// プールを非同期で初期化
+    /// </summary>
     public async UniTask InitializePoolsAsync()
     {
         Debug.Log("Initializing Bullet Pools...");
@@ -66,7 +74,9 @@ public class BulletManager : LocalMonoSingletonBase<BulletManager>
         return bulletGO;
     }
 
-    // プールに弾を戻す
+    /// <summary>
+    /// プールに弾を戻す
+    /// </summary>
     public void ReturnBullet(GameObject bullet, string bulletName, SIDE side)
     {
         if (bullet == null || !bullet.activeSelf) return;

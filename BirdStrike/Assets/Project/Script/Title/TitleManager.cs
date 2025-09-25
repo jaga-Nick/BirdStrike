@@ -5,40 +5,48 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Common;
 
-public class TitleManager : MonoBehaviour
+namespace Title
 {
-    
-    private InputSystem_Actions _actionMap;
-    private bool isOnce = false;
-
-    private void Awake()
+    /// <summary>
+    /// タイトルシーンを管理するクラス
+    /// </summary>
+    public class TitleManager : MonoBehaviour
     {
-        var manager = InputSystemActionsManager.Instance();
-        _actionMap = manager.GetInputSystem_Actions();
-        manager.UIEnable();
-    }
-
-    private void Start()
-    {
-        isOnce = false;
-        AudioManager.Instance().PlayBgm("BGM");
-    }
-
-    private void Update()
-    {
-        if (_actionMap.UI.Submit.IsPressed() && !isOnce)
-        {
-            isOnce = true;
-            GameManager.Instance().StartGame();
-        }
         
-        if (_actionMap.UI.Cancel.IsPressed())
+        private InputSystem_Actions _actionMap;
+        private bool isOnce = false;
+    
+        private void Awake()
         {
-            #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
-            #else
-                Application.Quit();//ゲームプレイ終了
-            #endif
+            var manager = InputSystemActionsManager.Instance();
+            _actionMap = manager.GetInputSystem_Actions();
+            manager.UIEnable();
+        }
+    
+        private void Start()
+        {
+            isOnce = false;
+            AudioManager.Instance().PlayBgm("BGM");
+        }
+    
+        private void Update()
+        {
+            if (_actionMap.UI.Submit.IsPressed() && !isOnce)
+            {
+                isOnce = true;
+                GameManager.Instance().StartGame();
+            }
+            
+            if (_actionMap.UI.Cancel.IsPressed())
+            {
+                #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+                #else
+                    Application.Quit();//ゲームプレイ終了
+                #endif
+            }
         }
     }
 }
+
+

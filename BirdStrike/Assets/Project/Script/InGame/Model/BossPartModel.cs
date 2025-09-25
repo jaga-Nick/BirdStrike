@@ -1,4 +1,5 @@
 using UnityEngine;
+using Common;
 
 namespace InGame.Model
 {
@@ -12,13 +13,12 @@ namespace InGame.Model
         public float maxHp { get; private set; }
         public float fireRate { get; private set; }
         public string bulletName { get; private set; }
-
-        // --- Movement Parameters ---
+        
         private readonly float _moveSpeed;
         private readonly float _moveDistanceY;
         private readonly float _moveDistanceX;
 
-        // --- State ---
+
         private Vector3 _initialPosition;
 
         /// <summary>
@@ -61,7 +61,6 @@ namespace InGame.Model
         /// <summary>
         /// 現在のフレームでの座標を計算して返す。
         /// </summary>
-        /// <returns>計算後の座標。</returns>
         public Vector3 CalculateCurrentPosition()
         {
             // 上下にゆらゆら動く処理

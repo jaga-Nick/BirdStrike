@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine.AddressableAssets;
 using InGame.Model;
 using InGame.View;
+using InGame.NonMVP;
 
 namespace InGame.Presenter
 {
@@ -145,11 +146,14 @@ namespace InGame.Presenter
                     }
                     break;
                 case "ULTRA_ATTACK":
-                    await UltraAttackAsync(command, token);
+                    await UltraAttack(command, token);
                     break;
             }
         }
 
+        /// <summary>
+        /// 放射上に弾を撃つ
+        /// </summary>
         private void Fire(AttackCommand command)
         {
             var bulletData = DataManager.Instance.GetBulletData(command.bulletName);
@@ -176,6 +180,10 @@ namespace InGame.Presenter
             }
         }
 
+        /// <summary>
+        /// プレイヤーを狙って弾を撃つ
+        /// </summary>
+        /// <param name="command"></param>
         private void Fire2(AttackCommand command)
         {
             var bulletData = DataManager.Instance.GetBulletData(command.bulletName);
@@ -191,7 +199,10 @@ namespace InGame.Presenter
             go.transform.rotation = Quaternion.FromToRotation(Vector3.left, bullet.direction);
         }
 
-        private async UniTask UltraAttackAsync(AttackCommand command, CancellationToken token)
+        /// <summary>
+        /// ミサイルを撃つ
+        /// </summary>
+        private async UniTask UltraAttack(AttackCommand command, CancellationToken token)
         {
             _isSpecialMoving = true;
             await MoveToAsync(new Vector3(5, 4, 0), _model.speed);
@@ -245,7 +256,9 @@ namespace InGame.Presenter
             Destroy(gameObject);
         }
         
-        // アニメーションイベントから呼ばれる
+        /// <summary>
+        /// アニメーションイベントから呼ばれ、ミサイルを生成
+        /// </summary>
         public async void OnMissileLoad()
         {
             if (_nextMissileData == null)

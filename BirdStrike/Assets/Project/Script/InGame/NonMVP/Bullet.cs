@@ -3,6 +3,9 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using InGame.Presenter;
 
+/// <summary>
+/// 弾のクラス
+/// </summary>
 public class Bullet : MonoBehaviour
 {
     public string bulletName;
@@ -15,14 +18,18 @@ public class Bullet : MonoBehaviour
     public int scoreValue;
     private CancellationTokenSource _lifeTimeCts;
 
-    // OnEnableは、オブジェクトがアクティブになるたびに呼ばれます
+    /// <summary>
+    /// OnEnableは、オブジェクトがアクティブになるたびに呼ばれます
+    /// </summary>
     void OnEnable()
     {
         // 寿命タイマーを開始
         StartLifeTimeCountDown().Forget();
     }
 
-    // OnDisableは、オブジェクトが非アクティブになるたびに呼ばれます
+    /// <summary>
+    /// OnDisableは、オブジェクトが非アクティブになるたびに呼ばれます
+    /// </summary>
     private void OnDisable()
     {
         // タイマーをキャンセルして、リソースリークを防ぎます
@@ -31,6 +38,9 @@ public class Bullet : MonoBehaviour
         _lifeTimeCts = null;
     }
     
+    /// <summary>
+    /// JSONから読み込んだデータで初期化する。
+    /// </summary>
     public void Initialize(BulletData data, SIDE ownerSide)
     {
         this.bulletName = data.bulletName;
@@ -41,7 +51,24 @@ public class Bullet : MonoBehaviour
         this.side = ownerSide;
         this.lifeTime = 5f;
     }
+    
+    private void Update()
+    {
+        OnUpdate();
+    }
+    
+    protected virtual void OnUpdate()
+    {
+        transform.position += speed * Time.deltaTime * direction;
+        if (!GameUtil.Instance.InScreen(transform.position))
+        {
+            BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
+        }
+    }
 
+    /// <summary>
+    /// 弾の寿命計測
+    /// </summary>
     private async UniTaskVoid StartLifeTimeCountDown()
     {
         _lifeTimeCts = new CancellationTokenSource();
@@ -56,20 +83,9 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    public virtual void OnUpdate()
-    {
-        transform.position += speed * Time.deltaTime * direction;
-        if (!GameUtil.Instance.InScreen(transform.position))
-        {
-            BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
-        }
-    }
-    
-    void Update()
-    {
-        OnUpdate();
-    }
-
+    /// <summary>
+    /// ダメージを受ける
+    /// </summary>
     public void TakeDamage(int damage)
     {
         durability -= damage;

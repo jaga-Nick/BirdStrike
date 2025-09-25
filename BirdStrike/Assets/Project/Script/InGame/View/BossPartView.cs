@@ -9,10 +9,8 @@ namespace InGame.View
     public class BossPartView : MonoBehaviour
     {
         private Animator _animator;
-        /// <summary>
-        /// 弾の発射口。Presenterが使用する。
-        /// </summary>
         public Transform firePoint;
+        public Transform battery;
 
         private void Awake()
         {
@@ -25,6 +23,16 @@ namespace InGame.View
         public void SetPosition(Vector3 position)
         {
             transform.position = position;
+        }
+        
+        /// <summary>
+        /// 砲台を指定されたターゲットの方向に向ける。
+        /// </summary>
+        public void RotateBattery(Vector3 targetPosition)
+        {
+            if (battery == null) return;
+            Vector3 dir = (targetPosition - battery.position).normalized;
+            battery.transform.rotation = Quaternion.FromToRotation(Vector3.left, dir);
         }
 
         /// <summary>

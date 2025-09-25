@@ -3,6 +3,7 @@ using UniRx;
 using Cysharp.Threading.Tasks;
 using InGame.Model;
 using InGame.View;
+using InGame.NonMVP;
 
 namespace InGame.Presenter
 {
@@ -57,8 +58,14 @@ namespace InGame.Presenter
         {
             if (!_entryComplete) return;
 
+            if (_target != null)
+            {
+                _view.RotateBattery(_target.transform.position);
+            }
+            
             // Modelに座標計算を依頼し、Viewに反映
             _view.SetPosition(_model.CalculateCurrentPosition());
+            
             
             HandleFire();
         }

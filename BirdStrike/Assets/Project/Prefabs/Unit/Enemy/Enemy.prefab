@@ -621,6 +621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 8159792652212041964}
+  battery: {fileID: 7608969748432439552}
 --- !u!114 &1355072680966107694
 MonoBehaviour:
   m_ObjectHideFlags: 0

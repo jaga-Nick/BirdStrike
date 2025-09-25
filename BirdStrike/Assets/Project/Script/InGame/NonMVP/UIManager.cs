@@ -3,8 +3,11 @@ using UnityEngine.UI;
 //using InGame.Manager; // GameManagerにアクセスするため
 using Common;
 
-namespace InGame.UI // UI用のnamespace
+namespace InGame.NonMVP
 {
+    /// <summary>
+    /// UIを管理するシングルトンクラス
+    /// </summary>
     public class UIManager : LocalMonoSingletonBase<UIManager>
     {
         [Header("UI Panels")]
