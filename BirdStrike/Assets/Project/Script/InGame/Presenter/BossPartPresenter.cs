@@ -7,7 +7,7 @@ using InGame.View;
 namespace InGame.Presenter
 {
     /// <summary>
-    /// ボスの部位のPresenter
+    /// ボスの部位のPresenter、ModelとViewを仲介し、ゲームロジックの司令塔となる。
     /// </summary>
     [RequireComponent(typeof(BossPartView))]
     public class BossPartPresenter : MonoBehaviour

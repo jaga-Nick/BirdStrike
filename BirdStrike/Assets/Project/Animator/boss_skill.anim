@@ -518,14 +518,14 @@ AnimationClip:
   - time: 0.13333334
     functionName: OnMissileLoad
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 11500000, guid: 4bf97b8b0ee14de787e91ba19920db03, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.73333335
     functionName: OnMissileLaunch
     data: 
-    objectReferenceParameter: {fileID: 0}
+    objectReferenceParameter: {fileID: 11500000, guid: 4bf97b8b0ee14de787e91ba19920db03, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0

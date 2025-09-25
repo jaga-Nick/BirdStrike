@@ -30,22 +30,6 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
 
     private void Awake()
     {
-        /*
-        // シングルトンのインスタンス設定
-        if (instance == null)
-        {
-            // 自分自身を静的なインスタンスとして登録
-            instance = this as AudioManager;
-            // シーンをまたいでも破棄されないようにする
-            DontDestroyOnLoad(gameObject);
-        }
-        else if (instance != this)
-        {
-            // 既に別のインスタンスが存在する場合は、自分を破棄する
-            Destroy(gameObject);
-            return;
-        }
-        */
         base.Awake();
         
         
@@ -58,7 +42,7 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
             }
         }
 
-        SetVolumeBgm(PlayerPrefs.GetFloat("BGM_VOLUME", 0.5f));
+        SetVolumeBgm(PlayerPrefs.GetFloat("BGM_VOLUME", 0.3f));
         
         
         seDict = new Dictionary<string, AudioClip>();
@@ -73,6 +57,9 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
         SetVolumeSe(PlayerPrefs.GetFloat("SE_VOLUME", 0.5f));
     }
 
+    /// <summary>
+    /// BGMを鳴す
+    /// </summary>
     public void PlayBgm(string name)
     {
         if (bgmDict.ContainsKey(name))
@@ -89,6 +76,9 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
         }
     }
 
+    /// <summary>
+    /// 現在なっているBGMをストップさせる
+    /// </summary>
     public void StopBgm()
     {
         bgmSource.Stop();
@@ -103,7 +93,9 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
     public float GetVolumeBgm() => bgmSource.volume;
     
     
-    
+    /// <summary>
+    /// SEを一回だけ鳴らす
+    /// </summary>
     public void PlaySe(string name)
     {
         if (seDict.ContainsKey(name))

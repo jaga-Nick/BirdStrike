@@ -65,7 +65,6 @@ public class Bullet : MonoBehaviour
         }
     }
     
-    // UpdateはUnitクラスにはないので、ここで直接呼び出します
     void Update()
     {
         OnUpdate();
