@@ -92,7 +92,7 @@ public class Player : Unit
         _bombCount.Value--;
         Debug.Log("BOMB! Remaining: " + _bombCount.Value);
 
-        var activeBullets = new List<Bullet>(BulletManager.Instance().ActiveEnemyBullets);
+        var activeBullets = new List<Bullet>(BulletManager.Instance.ActiveEnemyBullets);
         int scoreGained = 0;
 
         foreach (var bullet in activeBullets)
@@ -100,7 +100,7 @@ public class Player : Unit
             if (bullet != null && bullet.gameObject.activeSelf)
             {
                 scoreGained += bullet.scoreValue;
-                BulletManager.Instance().ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
+                BulletManager.Instance.ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
 
             }
         }

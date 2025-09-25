@@ -80,7 +80,7 @@ namespace InGame.Presenter
             var bulletData = DataManager.Instance.GetBulletData(_model.bulletName);
             if (bulletData == null) return;
 
-            GameObject bulletGO = BulletManager.Instance().GetBullet(_model.bulletName);
+            GameObject bulletGO = BulletManager.Instance.GetBullet(_model.bulletName);
             if (bulletGO == null) return;
 
             var bullet = bulletGO.GetComponent<Bullet>();

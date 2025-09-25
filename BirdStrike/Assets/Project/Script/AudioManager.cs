@@ -30,6 +30,25 @@ public class AudioManager : GlobalMonoSingletonBase<AudioManager>
 
     private void Awake()
     {
+        /*
+        // シングルトンのインスタンス設定
+        if (instance == null)
+        {
+            // 自分自身を静的なインスタンスとして登録
+            instance = this as AudioManager;
+            // シーンをまたいでも破棄されないようにする
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            // 既に別のインスタンスが存在する場合は、自分を破棄する
+            Destroy(gameObject);
+            return;
+        }
+        */
+        base.Awake();
+        
+        
         bgmDict = new Dictionary<string, AudioClip>();
         foreach (var entry in bgmList)
         {

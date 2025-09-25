@@ -14,6 +14,26 @@ namespace Common
         /// <summary>
         /// 生成
         /// </summary>
+        protected virtual void Awake()
+        {
+            if (instance == null)
+            {
+                // 自分自身を静的なインスタンスとして登録
+                instance = this as T;
+                // シーンをまたいでも破棄されないようにする
+                DontDestroyOnLoad(gameObject);
+            }
+            else if (instance != this)
+            {
+                // 既に別のインスタンスが存在する場合は、自分を破棄する
+                Destroy(gameObject);
+                return;
+            }
+            
+            instance = this as T;
+        }
+        
+        
         public static T Instance()
         {
             if (instance == null)
@@ -24,5 +44,6 @@ namespace Common
             }
             return instance;
         }
+        
     }
 }

@@ -143,7 +143,7 @@ namespace InGame.Presenter
             }
             
 
-            GameObject bulletGO = BulletManager.Instance().GetBullet(_model.bulletName);
+            GameObject bulletGO = BulletManager.Instance.GetBullet(_model.bulletName);
             if (bulletGO == null) return; // プールが空などの場合
 
             var bullet = bulletGO.GetComponent<Bullet>();
@@ -168,7 +168,7 @@ namespace InGame.Presenter
                     if (bullet.side == SIDE.ENEMY)
                     {
                         scoreGained += bullet.scoreValue;
-                        BulletManager.Instance().ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
+                        BulletManager.Instance.ReturnBullet(bullet.gameObject, bullet.bulletName, bullet.side);
                     }
                 }
                 

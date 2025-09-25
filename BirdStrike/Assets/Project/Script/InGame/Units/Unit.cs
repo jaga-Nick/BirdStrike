@@ -78,7 +78,7 @@ public class Unit : MonoBehaviour, IDisposable
         {
             if (string.IsNullOrEmpty(bulletName)) return;
 
-            GameObject go = BulletManager.Instance().GetBullet(this.bulletName);
+            GameObject go = BulletManager.Instance.GetBullet(this.bulletName);
             if(go == null) return;
             
             var bulletData = DataManager.Instance.GetBulletData(this.bulletName);

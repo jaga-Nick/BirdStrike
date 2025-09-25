@@ -47,6 +47,7 @@ namespace InGame.Model
         {
             if (hp <= 0) return;
             hp -= amount;
+            AudioManager.Instance().PlaySe("Damage");
         }
 
         /// <summary>

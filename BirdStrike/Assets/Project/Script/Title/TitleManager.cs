@@ -21,6 +21,7 @@ public class TitleManager : MonoBehaviour
     private void Start()
     {
         isOnce = false;
+        AudioManager.Instance().PlayBgm("BGM");
     }
 
     private void Update()

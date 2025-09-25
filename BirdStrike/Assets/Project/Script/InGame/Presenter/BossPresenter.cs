@@ -164,7 +164,7 @@ namespace InGame.Presenter
                 Quaternion rotation = Quaternion.Euler(0, 0, currentAngle);
                 Vector3 shotDirection = rotation * Vector3.left;
 
-                GameObject go = BulletManager.Instance().GetBullet(command.bulletName);
+                GameObject go = BulletManager.Instance.GetBullet(command.bulletName);
                 if (go == null) continue;
             
                 go.transform.position = _view.firePoint.position;
@@ -181,7 +181,7 @@ namespace InGame.Presenter
             var bulletData = DataManager.Instance.GetBulletData(command.bulletName);
             if (bulletData == null) return;
 
-            GameObject go = BulletManager.Instance().GetBullet(command.bulletName);
+            GameObject go = BulletManager.Instance.GetBullet(command.bulletName);
             if (go == null) return;
 
             go.transform.position = _view.firePoint2.position;

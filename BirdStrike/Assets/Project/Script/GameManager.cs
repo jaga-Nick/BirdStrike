@@ -57,7 +57,7 @@ public class GameManager : GlobalMonoSingletonBase<GameManager>
     {
         await DataManager.Instance.LoadDataAsync();
         if (!DataManager.Instance.IsDataLoaded) return;
-        await BulletManager.Instance().InitializePoolsAsync();
+        await BulletManager.Instance.InitializePoolsAsync();
         
         Status = GAME_STATUS.INGAME;
         var token = this.GetCancellationTokenOnDestroy();

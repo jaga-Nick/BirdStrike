@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Common;
 
-public class BulletManager : GlobalMonoSingletonBase<BulletManager>
+public class BulletManager : LocalMonoSingletonBase<BulletManager>
 {
     private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
     public List<Bullet> ActiveEnemyBullets { get; private set; } = new List<Bullet>();
@@ -54,7 +54,7 @@ public class BulletManager : GlobalMonoSingletonBase<BulletManager>
         }
 
         var bulletGO = _pools[bulletName].Dequeue();
-        //AudioManager.Instance().PlaySe("Fire");
+        AudioManager.Instance().PlaySe("Fire");
         bulletGO.SetActive(true);
         
         var bulletComp = bulletGO.GetComponent<Bullet>();

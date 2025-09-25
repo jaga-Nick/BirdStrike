@@ -51,7 +51,7 @@ public class Bullet : MonoBehaviour
         // Canceledでなければ（つまり寿命が尽きたら）プールに戻す
         if (!cancelled)
         {
-            BulletManager.Instance().ReturnBullet(this.gameObject, this.bulletName, this.side);
+            BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
         }
     }
 
@@ -60,7 +60,7 @@ public class Bullet : MonoBehaviour
         transform.position += speed * Time.deltaTime * direction;
         if (!GameUtil.Instance.InScreen(transform.position))
         {
-            BulletManager.Instance().ReturnBullet(this.gameObject, this.bulletName, this.side);
+            BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
         }
     }
     
@@ -75,7 +75,7 @@ public class Bullet : MonoBehaviour
         durability -= damage;
         if (durability <= 0)
         {
-            BulletManager.Instance().ReturnBullet(this.gameObject, this.bulletName, this.side);
+            BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
         }
     }
 
@@ -97,7 +97,7 @@ public class Bullet : MonoBehaviour
             if (col.CompareTag("Enemy") || col.GetComponent<BossPart>() != null)
             {
                 // 自分自身（弾）をプールに戻す
-                BulletManager.Instance().ReturnBullet(this.gameObject, this.bulletName, this.side);
+                BulletManager.Instance.ReturnBullet(this.gameObject, this.bulletName, this.side);
             }
         }
     }
