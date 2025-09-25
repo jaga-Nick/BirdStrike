@@ -296,17 +296,6 @@
                 },
                 {
                     "name": "",
-                    "id": "95a9f5fb-283a-4f35-8f6c-e46e61005078",
-                    "path": "<XInputController>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Bomb",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "2e92f7e4-c57b-4b0f-8858-f1075f0b7a1f",
                     "path": "<Gamepad>/buttonEast",
                     "interactions": "",
