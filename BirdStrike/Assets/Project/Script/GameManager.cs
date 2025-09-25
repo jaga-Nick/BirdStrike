@@ -10,7 +10,7 @@ using InGame.Presenter;
 using InGame.Model;
 using InGame.View;
 
-public class GameManager : SingletonMonoBehaviourBase<GameManager>
+public class GameManager : GlobalMonoSingletonBase<GameManager>
 {
     public GAME_STATUS status;
     public GAME_STATUS Status
@@ -19,13 +19,11 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         set
         {
             status = value;
-            if (UIManager.Instance != null) UIManager.Instance.UpdateUI();
+            if (InGame.UI.UIManager.Instance != null) InGame.UI.UIManager.Instance.UpdateUI();
         }
     }
-
-    // --- ▼▼▼ シンプルな変数に戻す ▼▼▼ ---
+    
     public int Score { get; private set; } = 0;
-    // --- ▲▲▲ シンプルな変数に戻す ▲▲▲ ---
 
     [HideInInspector] public PlayerPresenter player;
     
@@ -69,9 +67,8 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         
         GameObject playerGO = await Addressables.InstantiateAsync(playerData.addressableKey, playerData.spawnPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
         this.player = playerGO.GetComponent<PlayerPresenter>();
-        this.player.OnDeathAsObservable.Subscribe(Player_OnDeath).AddTo(this.player);
         player.Initialize(playerData);
-        player.Fly();
+        player.OnGameStart();
         
         var partSpawnTasks = new List<UniTask<GameObject>>();
         foreach (var partData in bossData.parts)
@@ -79,20 +76,20 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
             partSpawnTasks.Add(Addressables.InstantiateAsync(partData.addressableKey, bossData.initialPosition, Quaternion.identity).ToUniTask(cancellationToken: token));
         }
         GameObject[] partGOs = await UniTask.WhenAll(partSpawnTasks);
-        List<BossPart> spawnedParts = new List<BossPart>();
+        List<BossPartPresenter> spawnedParts = new List<BossPartPresenter>();
         for(int i = 0; i < partGOs.Length; i++)
         {
-            var part = partGOs[i].GetComponent<BossPart>();
-            part.Initialize(bossData.parts[i]);
+            var part = partGOs[i].GetComponent<BossPartPresenter>();
+            part.Initialize(bossData.parts[i], this.player.transform);
             spawnedParts.Add(part);
         }
         GameObject bossGO = await Addressables.InstantiateAsync(bossData.addressableKey, bossData.initialPosition, Quaternion.identity).ToUniTask(cancellationToken: token);
-        Boss boss = bossGO.GetComponent<Boss>();
+        BossPresenter boss = bossGO.GetComponent<BossPresenter>();
         
         boss.OnDeathAsObservable.Subscribe(_ => OnBossDefeated()).AddTo(boss);
-        boss.Initialize(bossData, spawnedParts, this.player);
+        boss.Initialize(bossData, spawnedParts, this.player.transform);
         
-        UIManager.Instance.InitializeInGameUI(boss);
+        //InGame.UI.UIManager.Instance().InitializeInGameUI(boss);
     }
 
     public void AddScore(int amount)
@@ -117,6 +114,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
         }
     }
 
+    /*
     private void Player_OnDeath(Unit sender)
     {
         if (player.life <= 0)
@@ -130,6 +128,7 @@ public class GameManager : SingletonMonoBehaviourBase<GameManager>
             player.Rebirth();
         }
     }
+    */
     
     private void OnBossDefeated()
     {

@@ -5,7 +5,7 @@ namespace Common
     /// <summary>
     /// InputSystem_Actions
     /// </summary>
-    public class InputSystemActionsManager : SingletonMonoBehaviourBase<InputSystemActionsManager>
+    public class InputSystemActionsManager : GlobalMonoSingletonBase<InputSystemActionsManager>
     {
         private InputSystem_Actions _InputSystemActions;
         /// <summary>

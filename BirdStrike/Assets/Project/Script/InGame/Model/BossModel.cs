@@ -50,6 +50,7 @@ namespace InGame.Model
         {
             if (isInvincible || hp <= 0) return;
             hp -= amount;
+            GameEvents.OnBossHpUpdated?.Invoke(this.hp, this.maxHp);
         }
         
         /// <summary>

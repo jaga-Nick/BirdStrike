@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Common;
 
-public class BulletManager : SingletonMonoBehaviourBase<BulletManager>
+public class BulletManager : GlobalMonoSingletonBase<BulletManager>
 {
     private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
     public List<Bullet> ActiveEnemyBullets { get; private set; } = new List<Bullet>();

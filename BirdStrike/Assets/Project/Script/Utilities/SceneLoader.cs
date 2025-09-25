@@ -6,7 +6,7 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-public class SceneLoader : SingletonMonoBehaviourBase<SceneLoader>
+public class SceneLoader : GlobalMonoSingletonBase<SceneLoader>
 {
     private SceneInstance _currentScene;
 

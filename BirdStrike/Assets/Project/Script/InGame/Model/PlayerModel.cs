@@ -79,6 +79,8 @@ namespace InGame.Model
             
             this.maxHp = 1f;
             this.hp = this.maxHp;
+            
+            GameEvents.OnLifeUpdated?.Invoke(this.life);
         }
 
         /// <summary>
@@ -97,6 +99,7 @@ namespace InGame.Model
         {
             if (life <= 0) return;
             life--;
+            GameEvents.OnLifeUpdated?.Invoke(this.life);
         }
 
         /// <summary>

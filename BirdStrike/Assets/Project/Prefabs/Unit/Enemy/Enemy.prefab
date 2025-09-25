@@ -382,7 +382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8159792652212041964}
   m_Layer: 0
-  m_Name: FirePoint2
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -499,7 +499,8 @@ GameObject:
   - component: {fileID: 8996216226325494212}
   - component: {fileID: 3576320898584160610}
   - component: {fileID: 134610782169268333}
-  - component: {fileID: 684234250194526151}
+  - component: {fileID: 6863109124435220943}
+  - component: {fileID: 1355072680966107694}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -607,7 +608,7 @@ CircleCollider2D:
   m_Offset: {x: -0.06643772, y: 0}
   serializedVersion: 2
   m_Radius: 0.43356228
---- !u!114 &684234250194526151
+--- !u!114 &6863109124435220943
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -616,19 +617,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 9217452506801643721}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c70e0cae51fb4fc89b7ea353251b0cb7, type: 3}
+  m_Script: {fileID: 11500000, guid: 021aec2bc0ff4c1fb8821c52cd4006cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  side: 2
-  life: 1
-  rigidbodyBird: {fileID: 3576320898584160610}
-  ani: {fileID: 8996216226325494212}
-  speed: 5
-  fireRate: 1.3
-  bulletTemplate: {fileID: 3522430151264285694, guid: 530da914a9fd5ff46bd30ba64566fbb8, type: 3}
   firePoint: {fileID: 8159792652212041964}
-  MaxHP: 5
-  Attack: 0
-  destroyOnDeath: 1
-  moveSpeed: 2
-  moveDistance: 1
+--- !u!114 &1355072680966107694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217452506801643721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d683e986e034d8c8170a2700cc589e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

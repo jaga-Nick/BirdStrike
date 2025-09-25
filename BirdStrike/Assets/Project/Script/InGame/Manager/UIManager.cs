@@ -1,66 +1,85 @@
 using UnityEngine;
 using UnityEngine.UI;
+//using InGame.Manager; // GameManagerにアクセスするため
+using Common;
 
-public class UIManager : MonoSingleton<UIManager>
+namespace InGame.UI // UI用のnamespace
 {
-    [Header("UI Panels")]
-    public GameObject uiReady;
-    public GameObject uiIngame;
-
-    [Header("In-Game UI Elements")]
-    public Text lifeCount;
-    public Text scoreCount;
-    public Image bossHpBar;
-
-    private Boss _boss; // 監視対象のボス
-
-    void Start()
+    public class UIManager : LocalMonoSingletonBase<UIManager>
     {
-        UpdateUI();
-        // ゲーム開始時はHPバーを非表示にしておく
-        if (bossHpBar != null) bossHpBar.gameObject.SetActive(false);
-    }
-    
-    /// <summary>
-    /// GameManagerから呼び出され、UIの監視対象を設定する
-    /// </summary>
-    public void InitializeInGameUI(Boss boss)
-    {
-        _boss = boss;
-        if (_boss != null && bossHpBar != null)
-        {
-            bossHpBar.gameObject.SetActive(true);
-        }
-    }
+        [Header("UI Panels")]
+        public GameObject uiReady;
+        public GameObject uiIngame;
 
-    void Update()
-    {
-        if (GameManager.Instance().Status != GAME_STATUS.INGAME)
-        {
-            if(uiIngame.activeSelf) uiIngame.SetActive(false);
-            return;
-        }
-        if(!uiIngame.activeSelf) uiIngame.SetActive(true);
+        [Header("In-Game UI")]
+        public Text lifeCount;
+        public Text scoreCount;
+        public Image bossHpBar;
 
-        // 残機表示
-        if (GameManager.Instance().player != null)
+        private void Awake()
         {
-            lifeCount.text = GameManager.Instance().player.life.ToString();
+            // イベントの購読を開始
+            GameEvents.OnLifeUpdated += UpdateLifeText;
+            GameEvents.OnScoreUpdated += UpdateScoreText;
+            GameEvents.OnBossHpUpdated += UpdateBossHpBar;
         }
 
-        // スコア表示
-        scoreCount.text = GameManager.Instance().Score.ToString("D6");
-
-        // ボスHPバー表示
-        if (_boss != null)
+        private void OnDestroy()
         {
-            // ボスのHPを更新
-            bossHpBar.fillAmount = _boss.hp / _boss.MaxHP;
+            // オブジェクトが破棄される際に、必ずイベントの購読を解除する
+            GameEvents.OnLifeUpdated -= UpdateLifeText;
+            GameEvents.OnScoreUpdated -= UpdateScoreText;
+            GameEvents.OnBossHpUpdated -= UpdateBossHpBar;
         }
-    }
 
-    public void UpdateUI()
-    {
-        uiReady.SetActive(GameManager.Instance().Status == GAME_STATUS.READY);
+        void Start()
+        {
+            // 初期状態ではインゲームUIとHPバーを非表示
+            uiIngame.SetActive(false);
+            if(bossHpBar != null) bossHpBar.gameObject.SetActive(false);
+            UpdateUI();
+        }
+
+        private void UpdateLifeText(int life)
+        {
+            if (lifeCount != null)
+            {
+                lifeCount.text = life.ToString();
+            }
+        }
+
+        private void UpdateScoreText(int score)
+        {
+            if (scoreCount != null)
+            {
+                scoreCount.text = score.ToString("D6");
+            }
+        }
+
+        private void UpdateBossHpBar(float currentHp, float maxHp)
+        {
+            if (bossHpBar != null)
+            {
+                if (!bossHpBar.gameObject.activeSelf)
+                {
+                    bossHpBar.gameObject.SetActive(true);
+                }
+                if (maxHp > 0)
+                {
+                    bossHpBar.fillAmount = currentHp / maxHp;
+                }
+            }
+        }
+        
+
+        public void UpdateUI()
+        {
+            var gm = GameManager.Instance();
+            if (gm != null)
+            {
+                uiReady.SetActive(gm.Status == GAME_STATUS.READY);
+                uiIngame.SetActive(gm.Status == GAME_STATUS.INGAME);
+            }
+        }
     }
 }

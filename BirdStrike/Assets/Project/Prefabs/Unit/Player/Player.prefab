@@ -298,7 +298,8 @@ GameObject:
   - component: {fileID: 8996216226325494212}
   - component: {fileID: 3576320898584160610}
   - component: {fileID: 134610782169268333}
-  - component: {fileID: 3610026138133589437}
+  - component: {fileID: 2154807966692121930}
+  - component: {fileID: 7060089382837828302}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -405,7 +406,7 @@ CircleCollider2D:
   m_Offset: {x: -0.06643772, y: 0}
   serializedVersion: 2
   m_Radius: 0.43356228
---- !u!114 &3610026138133589437
+--- !u!114 &2154807966692121930
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -414,17 +415,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 9217452506801643721}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9df1e1d707d3e3f4cbda396fd672ea9c, type: 3}
+  m_Script: {fileID: 11500000, guid: baec53768f524976b470b8cd74818a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  side: 1
-  life: 3
-  rigidbodyBird: {fileID: 3576320898584160610}
-  ani: {fileID: 8996216226325494212}
-  speed: 5
-  fireRate: 2.5
-  bulletTemplate: {fileID: 3522430151264285694, guid: 2a2a97683f70b5548889146ff343a8ea, type: 3}
   firePoint: {fileID: 5599453413037801670}
-  MaxHP: 1
-  Attack: 0
-  destroyOnDeath: 0
+--- !u!114 &7060089382837828302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9217452506801643721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a94b301e13d64b5ba372ffec8ad600ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

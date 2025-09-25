@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 
 [System.Serializable]
 public class GameDataWrapper
@@ -12,7 +13,7 @@ public class GameDataWrapper
     public BossData bossData;
 }
 
-public class DataManager : MonoSingleton<DataManager>
+public class DataManager : LocalMonoSingletonBase<DataManager>
 {
     public PlayerData Player { get; private set; }
     public BossData Boss { get; private set; }
@@ -29,12 +30,10 @@ public class DataManager : MonoSingleton<DataManager>
         return null;
     }
     
-    // --- ▼▼▼ 追加 ▼▼▼ ---
     public List<BulletData> GetAllBulletData()
     {
         return _bulletDataDict.Values.ToList();
     }
-    // --- ▲▲▲ 追加 ▲▲▲ ---
 
     public async UniTask LoadDataAsync()
     {

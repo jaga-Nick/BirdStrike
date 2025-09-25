@@ -2,9 +2,10 @@ using UnityEngine;
 using System.Collections.Generic;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using System.Threading;
+using UnityEngine.AddressableAssets;
 using InGame.Model;
 using InGame.View;
-using System.Threading;
 
 namespace InGame.Presenter
 {
@@ -22,9 +23,10 @@ namespace InGame.Presenter
         private bool _isSpecialMoving = false; // 特殊な移動中か
         
         // --- External References ---
-        private Unit _target;
+        private Transform _target;
         private List<BossPartPresenter> _parts;
-        private Missile _missile; // OnMissileLoad/Launchで使用
+        private Missile _missile;
+        private BulletData _nextMissileData;
 
         // --- Events ---
         private readonly Subject<BossPresenter> _onDeathSubject = new Subject<BossPresenter>();
@@ -33,7 +35,7 @@ namespace InGame.Presenter
         /// <summary>
         /// このボスを初期化する。GameManagerから呼び出される。
         /// </summary>
-        public void Initialize(BossData data, List<BossPartPresenter> parts, Unit target)
+        public void Initialize(BossData data, List<BossPartPresenter> parts, Transform target)
         {
             _view = GetComponent<BossView>();
             if (_view == null)
@@ -45,6 +47,7 @@ namespace InGame.Presenter
             try
             {
                 _model = new BossModel(data, parts);
+                GameEvents.OnBossHpUpdated?.Invoke(_model.hp, _model.maxHp);
             }
             catch (System.ArgumentNullException e)
             {
@@ -193,7 +196,17 @@ namespace InGame.Presenter
             _isSpecialMoving = true;
             await MoveToAsync(new Vector3(5, 4, 0), _model.speed);
             
-            await _view.PlayUltraAttackAnimationAsync();
+            _nextMissileData = DataManager.Instance.GetBulletData(command.bulletName);
+            
+            if (_nextMissileData != null)
+            {
+                // アニメーションを再生し、完了を待つ
+                await _view.PlayUltraAttackAnimationAsync();
+            }
+            else
+            {
+                Debug.LogError($"Missile data '{command.bulletName}' not found!");
+            }
 
             await MoveToAsync(new Vector3(5, 0, 0), _model.speed);
             _view.OnEntryComplete(); // 移動完了をViewに通知
@@ -233,8 +246,30 @@ namespace InGame.Presenter
         }
         
         // アニメーションイベントから呼ばれる
-        public void OnMissileLoad() { /* ... */ }
-        public void OnMissileLaunch() { /* ... */ }
+        public async void OnMissileLoad()
+        {
+            if (_nextMissileData == null)
+            {
+                Debug.LogError("OnMissileLoad was called, but no missile data was prepared.");
+                return;
+            }
+
+            // Addressablesからミサイルのプレハブを非同期でロードして生成
+            GameObject go = await Addressables.InstantiateAsync(_nextMissileData.addressableKey, _view.firePoint3.position, Quaternion.identity, _view.firePoint3).ToUniTask();
+            
+            _missile = go.GetComponent<Missile>();
+            _missile.Initialize(_nextMissileData, SIDE.ENEMY);
+            _missile.target = _target.transform;
+            
+            _nextMissileData = null;
+        }
+
+        public void OnMissileLaunch()
+        {
+            if (_missile == null) return;
+            _missile.transform.SetParent(null);
+            _missile.Launch();
+        }
 
         private void OnDestroy()
         {

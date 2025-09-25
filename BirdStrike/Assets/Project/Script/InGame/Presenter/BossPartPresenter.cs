@@ -20,7 +20,7 @@ namespace InGame.Presenter
         private bool _isInitialized = false;
         private bool _entryComplete = false;
         private float _fireTimer = 0f;
-        private Unit _target; // 攻撃対象
+        private Transform _target; // 攻撃対象
 
         // --- Events ---
         private readonly Subject<BossPartPresenter> _onDeathSubject = new Subject<BossPartPresenter>();
@@ -29,7 +29,7 @@ namespace InGame.Presenter
         /// <summary>
         /// この部位をJSONデータで初期化する。
         /// </summary>
-        public void Initialize(BossPartData data, Unit target)
+        public void Initialize(BossPartData data, Transform target)
         {
             _view = GetComponent<BossPartView>();
             if (_view == null)

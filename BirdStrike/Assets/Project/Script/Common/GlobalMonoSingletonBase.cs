@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace Common
 {
-    public class SingletonMonoBehaviourBase<T> : MonoBehaviour where T : SingletonMonoBehaviourBase<T>
+    /// <summary>
+    /// シーンをまたぐシングルトン
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class GlobalMonoSingletonBase<T> : MonoBehaviour where T : GlobalMonoSingletonBase<T>
     {
         protected static T instance;
 
